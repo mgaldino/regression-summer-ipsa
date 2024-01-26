@@ -1,0 +1,74 @@
+---
+title: "Essentials of Multiple Regression Analysis"
+author: "Manoel Galdino"
+date: "2023-12-03"
+output: 
+  pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# IPSA-USP Summer School in Concepts and Methods in Political Science and International Relations 
+
+## Course Description
+
+This course is designed for students who are interested in reviewing their training in multiple regression analysis. It will take place in the third week of the Summer School. The intensive course starts with a brief review of random variables, expectation and conditional expectation, and a discussion of the logic of the multiple regression model. Particular emphasis will be given to inference, to interpretation of coefficients and to interaction terms. Therefore, we focus on the logic behind a populational regression model and its relation to the sample regression model as a way to discuss inference, its results, and its limits. Also, we briefly debate the basic assumptions’ violation. At last, we discuss the basic idea of interactions, how to correct interpret the coefficients, and the most common mistakes. Similar to other IPSA-USP courses, the Essentials of Multiple Regressions Analysis takes a “hands on” approach. To complement lectures, students apply the concepts taught in lectures to analyze problems using the R software packages/programming language.
+
+## PREREQUISITES
+
+The course presumes students have some basic training in mathematics including arithmetic and algebra operations. It also assumes that students have a background in statistics including basic probability; random variables and their distributions; confidence intervals and tests of hypotheses for means, variances, and proportions from one or two populations.
+
+## DATES
+
+This course runs from January 29th to February 2nd, 2024.
+
+## DETAILED DESCRIPTION
+This course departs from the premise that the most effective way to learn multiple regression is by actively using the concepts discussed in class to solve problems. For each topic, we will have lectures that will be followed by sessions in which students will use empirical data to answer questions that are important to political scientists. For those students who will be studying multiple regression analysis in the IPSA-USP Summer School, the course will provide an intuitive and basic review of linear regression in theory and practice.  
+
+In the afternoon, classes will be focused on lab activities.
+
+Teaching Assistant
+Luiz Antonio Couto Soares, Universidade de São Paulo
+
+## REQUIRED READINGS
+
+Wooldridge, Jeffrey. 2018. Introductory Econometrics: A Modern Approach, 7th Edition.
+
+Hansen, B. (2022). Econometrics. Princeton University Press.
+
+Shalizi, C. R. (2015). The Truth About Linear Regression. Online Manuscript. http://www.stat.cmu.edu/~cshalizi/TALR.
+
+## FURTHER READINGS
+
+Gelman, A., Hill, J., & Vehtari, A. (2020). Regression and other stories. Cambridge University Press.
+
+Larsen, E. G., & Fazekas, Z. (2021). Quantitative Politics with R. Link: http://qpolr.com
+
+Moore, William H. & David A. Siegel . 2013. A Mathematics Course for Political & Social Research. Princeton University Press.
+
+Stock, J. H., & Watson, M. W. (2020). Introduction to econometrics 4th ed.
+
+Wickham, H., & Grolemund, G. (2016). R for data science: import, tidy, transform, visualize, and model data. O’Reilly Media, Inc..
+
+## SCHEDULE
+
+### Day 1, Statistics and Probability Review and Introduction to Linear Regression
+
+Wooldridge, Math Refresher B.
+Hansen, chap. 2
+
+### Day 2, The Linear Regression Model with a Single Predictor
+Hansen, chap. 2
+Shalizi, chaps. 3 and 4
+
+### Day 3, Assumptions of the Linear Regression
+Shalizi, chap. 6
+Hansen, chap. 2
+
+### Day 4, Inference
+Shalizi, chap. 6
+
+### Day 5, Multiple Regression
+Shalizi, chap. 12, 13 and 14.
