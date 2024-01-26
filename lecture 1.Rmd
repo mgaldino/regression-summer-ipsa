@@ -38,9 +38,9 @@ Understanding coefficients in regression as conditional expectations.
 ## Case Studies
 Presenting real-world examples where CEF is applied in political science research.
 
-### Example 1: Education and voter turnout
+## Wage and Demographics
 
-```{r import-pnad, echo=FALSE, message=FALSE, cache=TRUE}
+```{r import-pnad, echo=FALSE, warning = FALSE, message=FALSE, cache=TRUE}
 # Carregue o pacote PNADcIBGE
 # library(PNADcIBGE)
 # Importe os dados desejados
@@ -63,7 +63,10 @@ library(tidyverse)
 # saveRDS(data, file="pnad.rds")
 data <- readRDS(file="pnad.rds")
 ```
-```{r processing-pnad, echo=FALSE, message=FALSE, cache=TRUE}
+```{r processing-pnad, echo=FALSE, message=FALSE, cache=TRUE, warning=FALSE}
+
+library(ggplot2)
+
 levels <- c("College elementary or lower", "middle school", "high school", "Post-grad")
 
 
@@ -77,11 +80,6 @@ data <- data %>%
   mutate(education1= ifelse(grepl("Superior", education1 ), "College",
                             ifelse(grepl("Mestrado|Especializa|Doutorado", education1 ), "Post-grad", education1)),
          education1 = factor(education1, levels = levels, ordered=TRUE))
-```
-
-```{r wage-pnad, results='asis', message=FALSE, cache=TRUE, warning=F, fig.cap = "Distribuição dos salários" }
-
-library(ggplot2)
 
 df <- data %>%
   filter(!is.na(income)) %>%
@@ -91,6 +89,10 @@ df <- data %>%
   mutate(wage = income/(4.5*work_hours)) %>%
     mutate(log_wage = log(wage)) %>%
   mutate(gender = as.character(gender)) 
+```
+### Wage - density
+```{r wage-pnad, echo=FALSE, results='asis', message=FALSE, cache=TRUE, warning=F, fig.cap = "Distribuição dos salários" }
+
 
 p1 <- df %>%
   ggplot(aes(wage)) + geom_density(aes(weight=V1028)) + theme_bw(base_size = 22)
@@ -98,9 +100,9 @@ p1 <- df %>%
 print(p1)
 
 ```
+## Log Wage
 
-
-```{r wage-pnad-log, results='asis', message=FALSE, cache=TRUE, fig.cap = "Distribuição do log dos salários" }
+```{r wage-pnad-log, echo=FALSE, results='asis', message=FALSE, cache=TRUE, fig.cap = "Distribuição do log dos salários" }
 
 p2 <- df %>%
   ggplot(aes(log_wage)) + geom_density(aes(weight=V1028)) + theme_bw(base_size = 22)
@@ -109,7 +111,10 @@ print(p2)
 
 ```
 
-```{r wage-cond-expec, results='asis', message=FALSE, warning=F, cache=TRUE, fig.cap = "Distribuição dos salários" }
+## Wage and Gender
+
+
+```{r wage-cond-expec, echo=FALSE, results='asis', message=FALSE, warning=F, cache=TRUE, fig.cap = "Distribuição dos salários" }
 
 
 p3 <- df %>%
@@ -120,6 +125,7 @@ print(p3)
 
 ```
 
+## Wage and Education
 ```{r wage-cond-expec-educ, results='asis', message=FALSE, warning=F, cache=TRUE, fig.cap = "Distribuição dos salários" }
 
 
