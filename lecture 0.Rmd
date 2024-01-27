@@ -1,0 +1,240 @@
+---
+title: "Linear Regression and the Conditional Expectation Function (CEF)"
+author: "Manoel Galdino"
+date: "2024-01-26"
+output: ioslides_presentation
+---
+
+# Introduction
+
+- **Objective of the Lecture:** Define and explain the concept of the Conditional Expectation Function (CEF) and its relevance in political science research.
+- **Brief Overview of CEF:** Introduction to the concept of expectation in statistics and how it extends to conditional expectation.
+- **Importance in Political Science:** Discuss how CEF is used to understand relationships between variables in political science.
+
+# Review of expectation, variance, and their properties
+
+## Expectation
+
+- **Expectation of a Discrete Random Variable \(X\)**  
+  The expectation of a discrete random variable \(X\), where the probability mass of \(x \in X\) is given by \(p(x)\), is defined by: 
+  $$\sum(x \cdot p(x))$$
+
+- **Expectation of a Continuous Random Variable \(X\)**  
+  The expectation of a continuous random variable \(X\), whose density is \(f(x)\), is defined by: 
+  $$\int f(x) \cdot x \, dx$$
+
+---
+
+- **Expectation of a Function \(h(X)\) of \(X\)**  
+  Similarly, for the same variable \(X\) above, the expectation of a function \(h(X)\) is given by 
+  $$\int f(x) \cdot h(x) \, dx$$ 
+  and similarly for the discrete case.
+
+- **Reminder: the expectation is a population concept.**
+
+## Variance
+
+- **Variance of a random variable \(X\)** 
+$$Var(X) = \mathbb{E}[(X - \mathbb{E}[X])^2]$$
+
+## Covariance
+
+- **Covariance between two random variables \(X\) and \(Y\)**
+
+$$Cov(X,Y) = \mathbb{E}[(X -  \mathbb{E}[X])*(Y -  \mathbb{E}[Y])]$$
+
+- Note that \(Cov(X,X) = Var(X)\).
+
+- Covariance is positive when both \(X\) and \(Y\) tend to have values above (or below) their means simultaneously, and negative when one is above and the other below their respective means.
+
+## Algebra with Expectation, Variance, and Covariance
+
+1. **Linearity of Expectation**
+   $$\mathbb{E}[aX + bY] = a*\mathbb{E}[X] + b*\mathbb{E}[Y]$$
+
+2. **Variance Identity**
+   $$Var(X) = \mathbb{E}[X^2] - \mathbb{E}^2[X]$$
+
+3. **Covariance Identity**
+   $$Cov(X,Y) = \mathbb{E}[X*Y] - \mathbb{E}[X]*\mathbb{E}[Y]$$
+
+## Algebra with Expectation, Variance, and Covariance (cont.)
+
+<ol start=3>
+<li> **Covariance Symmetry**
+   $$Cov(X,Y) = Cov(Y,X)$$
+
+<li> **Variance Nonlinearity**
+   $$Var(a*X + b) = a^2*Var(X)$$
+
+<li> **Covariance Nonlinearity**
+   $$Cov(a*X + b,Y) = a*Cov(Y,X)$$
+</ol>
+
+
+## Conditional Expectation
+
+- Suppose we know the value of some variable \(X\), like education, and we want to use it to predict \(Y\), say, wage.
+
+- Instead of summarising the conditional distribution of \(Y\) given \(X\) with $\mathbb{E}[Y]$, we will use the conditional expectation when \(X\) takes a particular value \(x\): $\mathbb{E}[Y|X=x]$
+
+- sometimes $\mathbb{E}[Y|X]$ for shorthand
+
+- If \(Y\) is discrete, with values $\{y_1,  \dots , y_m\}$, then:
+$$\mathbb{E}[Y|X=x] = \sum^{m}_{j=1}y_j\cdot P_{Y|X=x}(y_j|X=x)$$
+
+## Properties of Conditional Expectation
+
+<ol>
+<li> $\mathbb{E}[f(X)|x] = f(x)$, for any function $f$.
+For example, $\mathbb{E}[X^2|X] = X^2$
+
+<li> For any functions f(x) and g(x):
+$$\mathbb{E}[f(X)Y + g(X)|X] = f(X)\mathbb{E}[Y|X] + g(x)$$
+For example, $\mathbb{E}[XY + 2X^2|X] = X\mathbb{E}[Y|X] + 2X^2$
+<li> If $X$ and $Y$ are independent, then $\mathbb{E}[Y|X] =\mathbb{E}[Y]$.
+In particular, if $X$ and $U$ are independent, and $\mathbb{E}[U] = 0$, then $\mathbb{E}[U|X] = 0$.
+<ol>
+
+## Properties of Conditional Expectation (cont.)
+<ol start=3>
+<li> Law of Iterated Expectations (LIE): $\mathbb{E}[\mathbb{E}[Y|X]] =\mathbb{E}[Y]$
+
+Let's say we have the average wage conditional on gender (male, female). The unconditional expectation is a weighted sum of the average wage for men and women. Which it is exactly the expectation of a conditional expectation.
+
+<li> If $\mathbb{E}[Y|X] = \mathbb{E}[Y]$, then $Cov(X,Y) = 0$
+
+<li> Properties 3 and 4 together implies that if $U$ and $X$ are random variables such that $\mathbb{E}[U|X] = 0$, then $\mathbb{E}[U] = 0$ and $U$ and $X$ are uncorrelated.
+<ol>
+
+## Conditional Expectation Function
+- We can compute for the population the conditional expectation for every educational level
+
+- We can also present the relationship as a function.
+
+- Let's say the **Conditional Expectation Function** is:
+$$\mathbb{E}[WAGE|EDUC] = 1.05 + .45EDUC$$
+
+- The coefficient of .45 on EDUC implies that one year of education increases, on average (or in expectation) the wage in .45 reais. 
+
+
+## CEF as the Optimal Predictor
+- CEF is acknowledged as the best global predictor ever.
+- As measured by the Mean Squared Error (MSE).
+- Basis for various predictors in regression and machine learning.
+- Advanced AI, including Large Language Models like ChatGPT, cannot surpass CEF in prediction.
+
+## Utilizing CEF
+- True form of CEF is unknown.
+- Focus on approximating CEF with linear regression.
+- Exploring approximation properties and conditions.
+- Linking CEF with predictive and causal models.
+
+## Linear Regression Model
+Overview of how linear regression is a special case of CEF.
+
+## Assumptions of Linear Regression
+Discuss assumptions and how they relate to CEF.
+
+## Interpreting Coefficients
+Understanding coefficients in regression as conditional expectations.
+
+# Practical Applications in Political Science
+
+## Case Studies
+Presenting real-world examples where CEF is applied in political science research.
+
+```{r import-pnad, echo=FALSE, warning = FALSE, message=FALSE, cache=TRUE}
+# Carregue o pacote PNADcIBGE
+# library(PNADcIBGE)
+# Importe os dados desejados
+# data <- get_pnadc(year=2017,
+#                   quarter=4,
+#                   selected=FALSE,
+#                   vars=c("Ano", "Trimestre", "UF", "V2007", "VD4020", "VD4035", "V1028", "V2010", "V3009A"),
+#                   design=FALSE, savedir=tempdir())
+# 
+library(tidyverse)
+# data <- data %>%
+#   select(Ano, Trimestre, UF, V2007, VD4020, VD4035, V1028, V2010, V3009A)
+# # Renaming variables:
+# data <- data %>%
+#   rename(gender = V2007,
+#          income = VD4020,
+#          work_hours = VD4035,
+#          race = V2010,
+#          education = V3009A)
+# saveRDS(data, file="pnad.rds")
+data <- readRDS(file="pnad.rds")
+```
+```{r processing-pnad, echo=FALSE, message=FALSE, cache=TRUE, warning=FALSE}
+
+library(ggplot2)
+
+levels <- c("Lt high School", "High school", "College", "Post-grad")
+
+
+# recode
+data <- data %>%
+  dplyr::filter(!is.na(education))
+
+data <- data %>%
+  mutate(education1 = as.character(education),
+         education1 = ifelse(grepl("(elementar|fundamental|lfabetiza|-escola)", education1), "Lt high School",
+                             ifelse(grepl("gin",education1), "Lt high School",
+                                    ifelse(grepl("supletivo do 1", education1), "Lt high School",
+                                           ifelse(grepl("Antigo cient|supletivo do 2|Regular do ensino m", education1), "High school", education1))))) %>%
+  mutate(education1= ifelse(grepl("Superior", education1 ), "College",
+                            ifelse(grepl("Mestrado|Especializa|Doutorado", education1 ), "Post-grad", education1)))
+
+data <- data %>%
+  mutate(education1 = factor(education1, levels = levels, ordered=TRUE))
+
+df <- data %>%
+  filter(!is.na(income)) %>%
+  filter(!is.na(work_hours)) %>%
+  filter(income > 0) %>%
+  filter(work_hours > 0) %>%
+  mutate(wage = income/(4.5*work_hours)) %>%
+    mutate(log_wage = log(wage)) %>%
+  mutate(gender = as.character(gender))
+
+# Fit a weighted linear model
+weighted_lm <- lm(log_wage ~ education1, data = df, weights = V1028)
+
+# Create a new data frame for predictions
+levels_x <- levels(df$education1)
+prediction_data <- data.frame(education1 = levels_x)
+prediction_data$log_wage <- predict(weighted_lm, newdata = prediction_data)
+
+```
+
+## CEF for wages and education
+
+```{r wage-cond-expec, echo=FALSE, results='asis', message=FALSE, warning=F, cache=TRUE }
+
+p3 <- df %>%
+  ggplot(aes(y=log_wage, x=education1, colour=education1)) +
+  geom_point() + geom_line(data = prediction_data, aes(x = education1, y = log_wage, group=1), color = "blue") +
+    labs(title = "Education and wages in Brazil",
+       x = "Education",
+       y = "Log of hourly wages - R$") + theme_bw(base_size = 22) +
+  theme(legend.position = "none") 
+print(p3)
+
+```
+
+## CEF for wages and education and gender
+
+```{r wage-gender-educ-expec, echo=FALSE, results='asis', message=FALSE, warning=F, cache=TRUE }
+
+p4 <- df %>%
+  ggplot(aes(y=log_wage, x=education1, colour=education1)) +
+  geom_point() + facet_wrap(vars(gender)) + 
+    labs(title = "Education, gender and wages in Brazil",
+       x = "Education",
+       y = "Log of hourly wages - R$") + theme_bw(base_size = 22) + theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+print(p4)
+
+```
