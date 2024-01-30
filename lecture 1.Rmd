@@ -1,0 +1,313 @@
+---
+title: "Linear Regression - Estimation"
+author: "Manoel Galdino"
+date: "2024-01-26"
+output: ioslides_presentation
+---
+## Agenda for today's lecture
+
+- **Objective of the Lecture:** 
+
+-- Learn how to estimate simple regression parameters from data.
+
+-- Develop an ability to interpret the results of simple linear regression.
+
+-- Learn what Ordinary Least Squares (OLS) does and does not.
+
+-- Lear that there is a difference between structural causal model and linear regression model.
+
+## Ordinary Least Squares
+
+- We saw that we can use the linear model as the best predictor or best approximation to the CEF.
+
+- Choose $\alpha$ and $\beta$ that minimizes the sum or the error, i.e, $\sum_{i=1}^{n}(e_i)^2 = \sum_{i=1}^{n}(y_i - (\alpha + \beta x_i))^2$
+
+- The solution to this problem is: 
+$\alpha = \mathbb{E}[Y] - \beta*\mathbb{E}[X]$ and $\beta = Cov(X,Y)/Var(X)$
+
+The prediction from the fitted model $\hat{Y}$ is given by $\mathbb{E}[Y] - \beta*\mathbb{E}[X] + Cov(X,Y)/Var(X)*X$
+
+- The error given from $Y - \hat{Y}$ can be different from the error $Y - \mathbb{E}[Y|X]$, unless the true CEF is linear.
+
+## CEF and Linear model errors
+
+- Let's consider an example to understand what we are assuming and not, an see what we can find about the error.
+
+- Let's say the true model of the world is this: $y_i = \alpha + \beta_1 x_i + \beta_2 z_i + e_i$.
+
+- Also, $x_i$ is caused by $z_i$ in the following way: 
+$$
+x_i = \begin{cases} 
+1 & \text{if } z_i > 0, \\
+0 & \text{otherwise.} 
+\end{cases}
+$$
+- What's the CEF if we condition only on $X$ in this case?
+
+## CEF and Linear model errors (cont. 1)
+
+When $x = 0$, we have:
+
+$$
+\begin{align*}
+\mathbb{E}[Y|X = 0] &= \mathbb{E}[\alpha|X=0] +  \mathbb{E}[\beta_1 X|X=0] + \\
+&\quad \mathbb{E}[\beta_2 Z|X=0] + \mathbb{E}[error|X=0] \\
+&= \alpha + 0 + \beta_2\mathbb{E}[Z|X=0]
+\end{align*}
+$$
+
+- When $x = 1$:
+
+$$
+\begin{align*}
+\mathbb{E}[Y|X = 0] = \mathbb{E}[\alpha|X = 0] +  \\ \mathbb{E}[\beta_1 X|X = 0] + \mathbb{E}[\beta_2 Z|X = 0] + \\ \mathbb{E}[error|X = 0] = \alpha + \beta_1 + \beta_2\mathbb{E}[Z|X = 0]
+\end{align*}
+$$
+
+## CEF and Linear model errors (cont. 2)
+
+- What if we approximate the CEF using only $x$ as variable, not including $z$?
+
+- It's  still true that, conditional on $x$, the linear model is the best linear approximation (BLP). The conditional expectation now is:
+
+- When $x = 0$: 
+$$
+\begin{align*}
+\mathbb{E}[Y|X = 0] = \mathbb{E}[\alpha \prime|X = 0] + \\ \mathbb{E}[\beta_1 \prime X|X = 0] + \mathbb{E}[error|X =  0] = \\
+\alpha \prime + beta_2 \prime\mathbb{E}[Z|X = 0]
+\end{align*}
+$$
+## CEF and Linear model errors (cont. 3)
+
+- When $x = 1$: 
+
+$$
+\begin{align*}
+\mathbb{E}[Y|X = 0] = \mathbb{E}[\alpha \prime|X = 0] + \\ \mathbb{E}[\beta_1 \prime X|X = 0] + \mathbb{E}[error \prime|X = \\ 0] = \alpha \prime + \beta_1 \prime + \beta_2 \prime\mathbb{E}[Z|X = 0]
+\end{align*}
+$$
+
+- The BLP is found by minimizing the squared sum of **residuals**. And this minimization process means that the value of $\alpha \prime$ and $\beta \prime$ are such that the covariance between the error $error \prime$ and the predictor $X$ is zero.
+
+## CEF and Linear model errors (cont. 4)
+
+- If we are interested in understanding the true causal effect of $X$ on $Y$, we need to differentiate between the true causal model and the BLP approximation model.
+
+- By construction there is no correlation between the error term and the predictor in the BLP model.
+
+- We can assume that there is no correlation between the error term of the causal model (sometimes called structural model) and the predictor.
+
+## CEF and Linear model errors (cont. 5)
+
+We also need to understand the difference between residuals and error.
+
+Error definition: errors are the theoretical and unobservable: the amounts by which the observed values $y_i$ differ from the conditional expectation $\mathbb{E}[Y|X]$.
+
+Residuals definition: the residuals are the amounts by which the observed values $y_i$ differ from regression estimates of their expected values $\hat{y_i}$.
+
+## Linear Regression
+
+We are defining linear regression as the following:
+
+- What values of $\alpha$ and $\beta$ minimize the sum of the squared error $e$, i.e: We want to minimize $\sum_{i=1}^{n}(e_i)^2 = \sum_{i=1}^{n}(y_i - (\alpha + \beta x_i))^2$
+
+- If we take the derivatives with respect to $\alpha$ and $\beta$ and make them equal to zero, we find the values of $\alpha$ and $\beta$ that minimize the above sum.
+
+- The intercept is given by $\alpha = \mathbb{E}[Y] - \beta*\mathbb{E}[X]$ and the slope by $\beta = Cov(X,Y)/Var(X)$
+
+## Assumptions of the population linear regression
+
+- $\mathbb{E}[e] = 0$, by default. (Suppose it's not zero, but some constant $c$. Then, just add and subtract $c$ and have a new regression with same slope, different intercept and zero mean error).
+
+- The error $e$ is uncorrelated with $X$.
+
+## OLS estimators
+
+- The most famous (sample) regression coefficient estimators are the ones provided by OLS.
+
+- The assumption behind OLS estimators is that the sample data $(y_i,x_i)$ for all $i$ are independent and identically distributed from a common (unknown) distribution.
+
+- the resulting OLS estimator for the slope is: $\hat{\beta} = Cov(Y, X)/Var(X)$.
+
+- the OLS estimator assure us that the residuals are also uncorrelated with predictors.
+
+# Properties of OLS estimators
+
+## Unbiasedness
+
+- If we assume that $\mathbb{E}[e|X] = 0$, then we can prove the estimator is unbiased.
+
+- We will use the following property for any $z$:
+\[
+n^{-1}*\sum\limits_{i=1}^n{}z_i - \bar{z} = 0
+\]
+- Also, any constant $w$ which does not vary with $i$ can be expressed as:
+
+$$\frac{1}{n} \sum_{i=1}^{n} (z_i - \bar{z}) \cdot w = 0$$
+
+Thus, $n^{-1} \cdot \sum({x_i -\bar{x}})*\bar{y} = 0$
+
+## Unbiasedness (cont. 1)
+
+$$
+\hat{\beta} = \frac{n^{-1}\sum({x_i - \bar{x}}) \cdot ({y_i - \bar{y}})}{\cdot S^2_x}
+$$
+- We will now expand the product, preserving the first parenthesis and then apply the linearity property of the summation.
+
+$$
+\begin{align*}
+\hat{\beta} = 
+\frac{n^{-1}\sum({x_i - \bar{x}}) \cdot y_i - \sum({x_i -\bar{x}}) \cdot\bar{y}}{S^2_x} = \\
+\frac{n^{-1}\sum({x - \bar{x}})*y_i}{S^2_x}
+\end{align*}
+$$
+
+## Unbiasedness (cont. 2)
+
+Let's recall that in the linear regression model, we have $y_i = \alpha + \beta*x_i + e_i$. By adding and subtracting $\beta*\bar{x}$ from the equation, we can rewrite it as follows:
+
+$$
+\begin{align*}
+y_i = \alpha + \beta*X_i + e_i = \\
+\alpha + \beta\bar{x} + \beta X_i - \beta\bar{x} + e_i = \\
+\alpha + \beta\bar{x} + \beta(x_i - \bar{x}) + e_i
+\end{align*}
+$$
+- Substituting it into the previous equation:
+
+$$
+\hat{\beta} =  \frac{n^{-1}\sum({x_i - \bar{x}})(\alpha + \beta\bar{x} + \beta(x_i - \bar{x}) + e_i)}{S^2_x}
+$$
+
+## Unbiasedness (cont. 3)
+
+
+$$
+\begin{align*}
+\hat{\beta} =  \frac{ n^{-1} (\alpha + \beta)\bar{x}\sum({x_i - \bar{x}}) +
+\sum({x_i - \bar{x}}) [\beta (x_i - \bar{x}) + e_i]}{S^2_x} = \\
+\hat{\beta} = \frac{ n^{-1} (\alpha + \beta) \bar{x}\sum({x_i - \bar{x}}) + n^{-1} \beta\sum(x_i - \bar{x})^2 + n^{-1} \sum({x_i - \bar{x}}) e_i} {S^2_x}
+\end{align*}
+$$
+
+The first term is a constant multiplied by the sum of $(x_i - \bar{x})$, which equals zero. We can eliminate it from the equation.
+
+$$
+\hat{\beta} = \frac{\beta n^{-1} \sum({x_i - \bar{x}})^2 +  n^{-1}\sum({x_i - \bar{x}}) e_i}{S^2_x}
+$$
+Continuing...
+
+## Unbiasedness (cont. 4)
+
+Now, the first term represents $\beta$ multiplied by the variance of $x$. Rewriting the equation differently:
+
+$$
+\hat{\beta} =  \frac{\beta S^2_x}{S^2_x} + \frac{n^{-1}\sum({x_i - \bar{x}}) e_i}{S^2_x}
+$$
+
+Simplifying further:
+
+$$
+\hat{\beta} =  \beta  + \frac{n^{-1}\sum({x_i - \bar{x}}) e_i}{S^2_x}
+$$
+Continuing...
+
+## Unbiasedness (cont. 5)
+
+The estimator $\hat{\beta}$ can be decomposed into the population parameter $\beta$ plus a weighted sum of the error term.
+
+Given that our sample is i.i.d., we know it's a weighted average of uncorrelated errors. Finally, we will show that the estimator is unbiased.
+
+If we denote the weights as $a_i$, we can express the expectation of the weighted sum of uncorrelated errors as:
+
+$$
+\begin{align*}
+\mathbb{E}[ \sum{a_i \cdot e_i}] = \mathbb{E}[a_1 \cdot e_1 + a_2 \cdot e_2 + ... + a_n \cdot e_n] = \\
+a_1 \cdot \mathbb{E}[e_1] + a_2 \cdot \mathbb{E}[ e_2] + ... + a_n \cdot \mathbb{E}[ e_n]
+\end{align*}
+$$
+
+## Unbiasedness (cont. 6)
+
+Simplifying further:
+
+$$
+\mathbb{E}[ \sum{a_i \cdot e_i}] = \sum{a_i} \cdot \mathbb{E}[e_i]
+$$
+
+Here, we've shown that the expectation of the weighted sum of *uncorrelated errors* is the sum of the weights times the individual expectations of the errors.
+
+Now, let's recall our assumption that $\mathbb{E}[e|X] = 0$.
+
+Therefore, if the expectation of the error is always zero for any value of x, we have:
+
+$$
+n^{-1}\sum({x_i - \bar{x}}) \mathbb{E}[e_i] =0
+$$
+
+## Unbiasedness (cont. 7)
+
+Now, applying this result to the estimator $\hat{\beta}$:
+
+$$
+\begin{align*}
+\mathbb{E}[\hat{\beta}] = \beta +  \mathbb{E}[ \frac{ \sum({x_i - \bar{x}}) \cdot e_i}{n \cdot S^2}] = \\
+\beta +\frac{\sum({x_i - \bar{x}})}{S^2_x} \cdot \mathbb{E}[e_i] = \beta
+\end{align*}
+$$
+
+This shows that under the assumption of zero conditional expectation of errors, the expectation of our estimator $\hat{\beta}$ equals the population parameter $\beta$.
+
+- This is the proof that our estimator is unbiased.
+
+## Variance of OLS
+
+Let's explore the variance of the beta estimator:
+
+$$
+\mathbb{Var}[\hat{\beta}] = \mathbb{Var} \left( \frac{\beta +  \sum({x - \bar{x}})e_i}{nS_x^2} \right)
+$$
+
+We know that $\mathbb{Var}[x + a] = \mathbb{Var}[x]$. Hence, we can eliminate $\beta$ from the equation:
+
+$$
+\mathbb{Var}[\hat{\beta}] = \mathbb{Var} \left( \frac{\sum({x - \bar{x}})e_i}{nS_x^2} \right)
+$$
+
+Since all observations of $x$ have been observed, the sum of differences from the mean is a constant. We also know that $\mathbb{Var}[x*a] = a^2\mathbb{Var[x]}$.
+
+## Variance of OLS (cont. 2)
+
+$$
+\begin{align*}
+\mathbb{Var}[\hat{\beta}] = \frac{\sum({x - \bar{x}})^2}{n^2S_x^4} \mathbb{Var}[e_i] = \\
+\frac{nS_x^2}{n^2S_x^4}\mathbb{Var}[e_i] = \\
+\frac{1}{nS_x^2}\mathbb{Var}[e_i]
+\end{align*}
+$$
+If we assume that $\mathbb{Var}[e_i] = \sigma^2$, then:
+
+$$
+\mathbb{Var}[\hat{\beta}] = \frac{\sigma^2}{nS_x^2}
+$$
+
+## Variance of OLS (cont. 3)
+
+- The variance of our estimator is the variance of the error divided by the variance of $x$ multiplied by the sample size. 
+
+- This implies that: when $Y$ is more dispersed, our estimator has higher variance.
+
+- A larger sample size leads to lower variance. 
+
+- When $X$ is more spread out, it results in a lower estimator variance.
+
+## Standard Error Calculation
+
+Finally, the standard error of an estimate is simply the square root of the variance. Therefore:
+
+$$
+se(\hat{\beta}) = \frac{\sigma}{\sqrt{nS^2_x}}
+$$
+
+This equation represents the standard error of our beta estimator, showing how it depends on the error standard deviation, sample size, and variance of $x$.
+
