@@ -1,0 +1,167 @@
+---
+title: "Linear Regression - Inference"
+author: "Manoel Galdino"
+date: "2024-01-26"
+output: ioslides_presentation
+---
+## Agenda for today's lecture
+
+- **Objective of the Lecture:** 
+
+-- Learn how to estimate simple regression parameters from data.
+
+-- Develop an ability to interpret the results of simple linear regression.
+
+-- Learn what Ordinary Least Squares (OLS) does and does not.
+
+-- Lear that there is a difference between structural causal model and linear regression model.
+
+## Maximum Likelihood
+
+- We've discussed several important aspects of OLS, including the unbiasedness and variance of $\hat{\beta}$.
+- However, OLS does not provide any sampling distributions.
+- As a result, we cannot make inferences such as hypothesis testing or constructing confidence intervals.
+- Therefore, we will introduce the method of maximum likelihood for simple linear regression.
+
+
+## Maximum Likelihood - assumptions
+
+- There are no specific assumptions about X.
+- We continue to use a linear model to approximate the Conditional Expectation Function (CEF).
+- We will assume that the error term $e$ is normally distributed as $N(0, \sigma^2)$ and is independent of $X$.
+- Error terms are independent across observations.
+
+## Maximum Likelihood vs OLS - assumptions
+
+- What has changed?
+- The first two assumptions remain the same.
+- The third assumption is new. Previously, we only required the errors to have a zero mean (and, for the variance derivation, a constant variance). Now, we are assuming a specific distribution for the errors (Gaussian).
+- We have moved from assuming uncorrelatedness to independence, which is a stronger condition.
+
+## Maximum Likelihood - what do we get?
+
+- "With great power comes great responsibility."
+- Additional assumptions grant more power. This enables us to write a probability distribution for $Y$.
+- $y_i = \alpha + \beta x_i + e_i$, where $e_i \sim N(0, \sigma^2)$.
+- Alternative parametrization: $y_i \sim N(\mu, \sigma^2)$. Here, $\mu = \alpha + \beta x_i$.
+- The pdf of $Y$ given $X=x$ is $p(y|X=x; \alpha, \beta, \sigma^2)$. This notation highlights the distinction between observables and parameters.
+
+## Maximum Likelihood - what do we get?
+
+<style>
+.small-font {
+    font-size: 80%;
+}
+</style>
+
+<div class="small-font">
+- For any given data set, we can express the probability density, under our model, of observing that specific data.
+$$
+\begin{align*}
+\prod_{i=1}^n p(y_i|x_i;\alpha, \beta, \sigma^2) = \\
+\prod_{i=1}^n \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left(-\frac{(y_i - \mu)^2}{2\sigma^2}\right) = \\
+\prod_{i=1}^n \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left(-\frac{(y_i - (\alpha + \beta x_i))^2}{2\sigma^2}\right)
+\end{align*}
+$$
+- After collecting the data, with some estimated parameters, the equation becomes:
+<div>
+
+$$
+\prod_{i=1}^n \frac{1}{\sqrt{2\pi S^2}}\exp\left(-\frac{(\hat{\alpha} + \hat{\beta} x_i)^2}{2S^2}\right)
+$$
+- This expression represents the likelihood, a function of the estimated parameters.
+
+## Maximum Likelihood Estimation
+
+- Our goal is to select parameter values that maximize the probability of observing the data.
+- Utilizing calculus and working with the log-likelihood (applying the logarithm to the function alters the function but not the location of its maximum), we can easily derive the formulas for $\hat{\alpha}$ and $\hat{\beta}$ that maximize the likelihood.
+- $\hat{\alpha} = \mathbb{E}[Y] - \hat{\beta} \mathbb{E}[X]$
+- $\hat{\beta} = \frac{\text{Cov}(X,Y)}{S^2_x}$
+- $\hat{\sigma^2} = \mathbb{E}[(y_i - \hat{\alpha} - \hat{\beta}x_i)^2]$
+- We obtain the same estimators as before, plus an estimator for $\sigma^2$
+
+## MLE - Sampling Distributions
+
+- Recall from the last class: $\hat{\beta} = \beta + \frac{\sum_{i=1}^n (x_i - \bar{x})e_i}{nS^2_x}$
+- With errors being independent Gaussians, $\hat{\beta}$ is also Gaussian.
+- Knowing its mean and variance, we can state:
+- $\hat{\beta} \sim N(\beta, \frac{\sigma^2}{nS^2_x})$
+- Also, it's straightforward to derive the mean using the fact that if $X \sim N(\mu_x, \sigma^2_x)$ and $Y \sim N(\mu_y, \sigma^2_y)$ are independent, then for $Z = X + Y$, we have $Z \sim N(\mu_x + \mu_y, \sigma^2_x + \sigma^2_y)$.
+- Using the fact that error term is distributed as $e_i \sim N(0, \sigma^2)$, we get the mean very easily.
+
+
+## Properties and limitations of MLE
+
+- MLE estimators are **asymptotically efficient**, meaning that  its parameters estimates converge on the truth "as quickly as possible" as $n$ grow.
+- They're also unbiased, as the OLS estimators, since they are the same.
+- However, if the error is not Gaussian distributed, than the sampling distributions calculations we just did are wrong. So will be our hypothesis tests, confidence intervals etc. 
+- How wrong? It is hard to say, but let's run some simulations to have at least an idea of how wrong.
+
+## Simulation of a wrong assumption
+
+Let's rum four simulations: 1. errors are normal. 2. errors are t-distributed. 3. errors are Beta distributed. 4. errors are a mixture of Normals.
+In every case, there is a fixed part of the DGP: $\mu = \alpha + \beta x_i$, with $\alpha = 5$ and $\beta = 1$, $x \sim N(2, 4)$. And the part that we change from each simulation, the distribution of the error term.
+
+## Simulation of a wrong assumption - Normal errors
+
+```{r Normal errors, echo=FALSE}
+# number of observations in the simulation
+set.seed(1234)
+n <- 1000 
+x <- rnorm(n, 2, sqrt(4))
+e <- rt(1000, 4)
+alpha <- 5
+beta <- 1
+y <- alpha + beta*x + e
+fit1 <- lm(y ~x)
+summary(fit1)
+```
+
+## Simulation of a wrong assumption - t errors
+
+```{r t errors, echo=FALSE}
+# number of observations in the simulation
+
+set.seed(1234)
+n <- 1000 
+x <- rnorm(n, 2, sqrt(4))
+e <- rt(n, df=4)*3
+alpha <- 5
+beta <- 1
+y <- alpha + beta*x + e
+fit2 <- lm(y ~x)
+summary(fit2)
+```
+
+## Simulation of a wrong assumption - Beta errors
+
+```{r Beta errors, echo=FALSE}
+# number of observations in the simulation
+set.seed(1234)
+n <- 1000 
+x <- rnorm(n, 2, sqrt(4))
+e <- rbeta(1000, .7, .7)*12.3
+e <- e - mean(e)
+alpha <- 5
+beta <- 1
+y <- alpha + beta*x + e
+fit3 <- lm(y ~x)
+summary(fit3)
+```
+
+## Simulation of a wrong assumption - Mixture of Normal errors
+
+```{r Mixture of Normal, echo=FALSE}
+# number of observations in the simulation
+set.seed(1234)
+n <- 1000 
+x <- rnorm(n, 2, sqrt(4))
+e1 <- rnorm(n/2, 2, 4)
+e2 <- rnorm(n/2, -2, 4)
+e <- c(e1, e2)
+alpha <- 5
+beta <- 1
+y <- alpha + beta*x + e
+fit3 <- lm(y ~x)
+summary(fit3)
+```
