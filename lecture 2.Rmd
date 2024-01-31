@@ -251,7 +251,7 @@ Applying this fact, we have:
 $$
 \begin{align}
 \frac{\hat{\beta} - \beta}{\hat{se}(\hat{\beta})} = \frac{\hat{\beta} - \beta}{\sigma} \times \frac{\sigma}{\hat{se}(\hat{\beta})} \\
-= \frac{\frac{\hat{\beta} - \beta}{\sigma}}{\frac{\hat{se}(\hat{\beta})}{\sigma}} = \frac{N(0,1/ns^2_x)}{\frac{\hat{\sigma}}{S_x\sqrt{n-2}}} \\
+= \frac{\frac{\hat{\beta} - \beta}{\sigma}}{\frac{\hat{se}(\hat{\beta})}{\sigma}} = \frac{N(0,1/ns^2_x)}{\frac{\hat{\sigma}}{\sigma S_x\sqrt{n-2}}} \\
 = \frac{S_x \times N(0,1/ns^2_x)}{\frac{\hat{\sigma}}{\sigma \sqrt{n-2}}} = \frac{N(0,1/n)}{\frac{\hat{\sigma}}{\sigma \sqrt{n-2}}} \\
 = \frac{\sqrt{n} \times N(0,1/n)}{\frac{\sqrt{n} \times \hat{\sigma}}{\sigma \sqrt{n-2}}} = \frac{N(0,1)}{\frac{\sqrt{n\hat{\sigma}^2}}{\sqrt{\sigma^2 \times (n-2)}}} \\
 = \frac{N(0,1)}{\sqrt{\frac{n\hat{\sigma}^2}{\sigma^2 \times (n-2)}}} = \frac{N(0,1)}{\sqrt{\chi^2_{n-2}/(n-2)}} \sim t_d

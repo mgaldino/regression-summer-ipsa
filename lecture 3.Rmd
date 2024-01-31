@@ -20,7 +20,6 @@ output: ioslides_presentation
 - Most of the lessons learned still work
 - To understand it, it's easier with matrix, instead of summation. - The derivations are easier as well
 
-
 # Review of basic vector and matrix operations
 
 ## Overview of Vectors
@@ -361,7 +360,7 @@ Large residuals (or non-constant variance) may result from a poorly specified mo
 
 ## Robust standard errors - summary
 
-Robust standard errors are essential when dealing with heteroscedasticity or autocorrelation in errors. They ensure accurate standard error estimates under these conditions, leading to more reliable statistical inferences.
+Robust standard errors are essential when dealing with heteroscedasticity or autocorrelation in errors.
 
 There are many types of robust SEs.
 

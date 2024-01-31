@@ -3069,21 +3069,18 @@ var loadDeck = function(event) {
   });
 };
 
-if (!window.Shiny) {
-  // If Shiny is loaded, the slide deck is initialized in ioslides template
-
-  if (document.readyState !== "loading" &&
-      document.querySelector('slides') === null) {
-    // if the document is done loading but our element hasn't yet appeared, defer
-    // loading of the deck
-    window.setTimeout(function() {
-      loadDeck(null);
-    }, 0);
-  } else {
-    // still loading the DOM, so wait until it's finished
-    document.addEventListener("DOMContentLoaded", loadDeck);
-  }
+if (document.readyState !== "loading" &&
+    document.querySelector('slides') === null) { 
+  // if the document is done loading but our element hasn't yet appeared, defer
+  // loading of the deck
+  window.setTimeout(function() {
+    loadDeck(null);
+  }, 0);
+} else {
+  // still loading the DOM, so wait until it's finished
+  document.addEventListener("DOMContentLoaded", loadDeck);
 }
+
 
 
 </script>
@@ -3435,7 +3432,7 @@ P(\beta - 1.96 \times se(\hat{\beta}) &lt; \hat{\beta} &lt; \beta  + 1.96 \times
 \[
 \begin{align}
 \frac{\hat{\beta} - \beta}{\hat{se}(\hat{\beta})} = \frac{\hat{\beta} - \beta}{\sigma} \times \frac{\sigma}{\hat{se}(\hat{\beta})} \\
-= \frac{\frac{\hat{\beta} - \beta}{\sigma}}{\frac{\hat{se}(\hat{\beta})}{\sigma}} = \frac{N(0,1/ns^2_x)}{\frac{\hat{\sigma}}{S_x\sqrt{n-2}}} \\
+= \frac{\frac{\hat{\beta} - \beta}{\sigma}}{\frac{\hat{se}(\hat{\beta})}{\sigma}} = \frac{N(0,1/ns^2_x)}{\frac{\hat{\sigma}}{\sigma S_x\sqrt{n-2}}} \\
 = \frac{S_x \times N(0,1/ns^2_x)}{\frac{\hat{\sigma}}{\sigma \sqrt{n-2}}} = \frac{N(0,1/n)}{\frac{\hat{\sigma}}{\sigma \sqrt{n-2}}} \\
 = \frac{\sqrt{n} \times N(0,1/n)}{\frac{\sqrt{n} \times \hat{\sigma}}{\sigma \sqrt{n-2}}} = \frac{N(0,1)}{\frac{\sqrt{n\hat{\sigma}^2}}{\sqrt{\sigma^2 \times (n-2)}}} \\
 = \frac{N(0,1)}{\sqrt{\frac{n\hat{\sigma}^2}{\sigma^2 \times (n-2)}}} = \frac{N(0,1)}{\sqrt{\chi^2_{n-2}/(n-2)}} \sim t_d
@@ -3515,11 +3512,6 @@ P(\beta - 1.96 \times se(\hat{\beta}) &lt; \hat{\beta} &lt; \beta  + 1.96 \times
        window.jQuery(document).on('slideenter', function(e) {
          window.jQuery(e.target).trigger('shown');
       });
-    }
-    if (window.Shiny) {
-      // Initialize slides when this script appears on the page, since it
-      // indicates that the <slides> markup has been fully loaded.
-      window.loadDeck();
     }
   })();
 </script>
