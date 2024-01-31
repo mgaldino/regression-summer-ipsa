@@ -1,5 +1,5 @@
 ---
-title: "Linear Regression - Inference"
+title: "Linear Regression - MLE and Inference"
 author: "Manoel Galdino"
 date: "2024-01-26"
 output: ioslides_presentation
@@ -8,13 +8,11 @@ output: ioslides_presentation
 
 - **Objective of the Lecture:** 
 
--- Learn how to estimate simple regression parameters from data.
+-- Learn what is the Maximum Likelihood Estimator (MLE)
 
--- Develop an ability to interpret the results of simple linear regression.
+-- Lear how to make inference with MLE
 
--- Learn what Ordinary Least Squares (OLS) does and does not.
-
--- Lear that there is a difference between structural causal model and linear regression model.
+-- Learn how to make inference using the $t$ distribution
 
 ## Maximum Likelihood
 
@@ -92,30 +90,31 @@ $$
 
 ## Properties and limitations of MLE
 
-- MLE estimators are **asymptotically efficient**, meaning that  its parameters estimates converge on the truth "as quickly as possible" as $n$ grow.
-- They're also unbiased, as the OLS estimators, since they are the same.
-- However, if the error is not Gaussian distributed, than the sampling distributions calculations we just did are wrong. So will be our hypothesis tests, confidence intervals etc. 
-- How wrong? It is hard to say, but let's run some simulations to have at least an idea of how wrong.
+- MLE estimators are **asymptotically efficient**, meaning their parameter estimates converge on the truth "as quickly as possible" as $n$ grows.
+- They are also unbiased, like the OLS estimators.
+- However, if the error is not Gaussian distributed, then the sampling distribution calculations we just did are incorrect. Consequently, our hypothesis tests, confidence intervals, etc., will also be incorrect.
+- How incorrect?
 
 ## Simulation of a wrong assumption
 
-Let's rum four simulations: 1. errors are normal. 2. errors are t-distributed. 3. errors are Beta distributed. 4. errors are a mixture of Normals.
-In every case, there is a fixed part of the DGP: $\mu = \alpha + \beta x_i$, with $\alpha = 5$ and $\beta = 1$, $x \sim N(2, 4)$. And the part that we change from each simulation, the distribution of the error term.
+Let's run four simulations where: 1. errors are normal; 2. errors are t-distributed; 3. errors are Beta distributed; 4. errors are a mixture of Normals.
+In every case, there is a fixed part of the DGP: $\mu = \alpha + \beta x_i$, with $\alpha = 5$ and $\beta = 1$, $x \sim N(2, 4)$. And the part that we change from each simulation is the distribution of the error term.
 
 ## Simulation of a wrong assumption - Normal errors
 
 ```{r Normal errors, echo=FALSE}
 # number of observations in the simulation
 set.seed(1234)
-n <- 1000 
+n <- 100
 x <- rnorm(n, 2, sqrt(4))
-e <- rt(1000, 4)
+e <- rnorm(n, 0, 4) # Adjusted to reflect typical error distribution
 alpha <- 5
 beta <- 1
-y <- alpha + beta*x + e
-fit1 <- lm(y ~x)
+y <- alpha + beta * x + e
+fit1 <- lm(y ~ x)
 summary(fit1)
 ```
+
 
 ## Simulation of a wrong assumption - t errors
 
@@ -123,8 +122,8 @@ summary(fit1)
 # number of observations in the simulation
 
 set.seed(1234)
-n <- 1000 
-x <- rnorm(n, 2, sqrt(4))
+n <- 100 
+x <- rnorm(n, 2, 4)
 e <- rt(n, df=4)*3
 alpha <- 5
 beta <- 1
@@ -138,9 +137,9 @@ summary(fit2)
 ```{r Beta errors, echo=FALSE}
 # number of observations in the simulation
 set.seed(1234)
-n <- 1000 
+n <- 100 
 x <- rnorm(n, 2, sqrt(4))
-e <- rbeta(1000, .7, .7)*12.3
+e <- rbeta(n, .7, .7)*12.3
 e <- e - mean(e)
 alpha <- 5
 beta <- 1
@@ -154,7 +153,7 @@ summary(fit3)
 ```{r Mixture of Normal, echo=FALSE}
 # number of observations in the simulation
 set.seed(1234)
-n <- 1000 
+n <- 100
 x <- rnorm(n, 2, sqrt(4))
 e1 <- rnorm(n/2, 2, 4)
 e2 <- rnorm(n/2, -2, 4)
@@ -165,3 +164,138 @@ y <- alpha + beta*x + e
 fit3 <- lm(y ~x)
 summary(fit3)
 ```
+## Exercise
+
+1. Compute an "empirical" estimate of the true standard errors in each case by simulating many estimations of $\hat{\beta}$, recording each value, and computing the variance and the square root of the variance (also known as standard error) of the estimates for each simulation. Verify that the average is close to the true value of $\beta$.
+
+2. Investigate what happens when the sample size $n$ increases (from 100 to 500 to 1000).
+
+# Inference
+
+## Sampling Distribution
+
+- We know that $\hat{\beta} \sim N(\beta, \frac{\sigma^2}{nS^2_x})$.
+
+- To make inferences, we need to know the true $\beta$ and the error variance, which we don't. Therefore, we manipulate the equation to remove one of the parameters of the probability distribution.
+
+- $\hat{\beta} - \beta \sim N(0, \frac{\sigma^2}{nS^2_x})$.
+
+- We still have one unknown in the probability distribution. As a result, we need to estimate $\sigma^2$.
+
+## Sampling Distribution of $\hat{\sigma^2}$
+
+- The estimator of the variance can be defined as the sum of the squared residuals (since the mean of the residuals is zero) divided by $n$.
+
+Formally: $\hat{\sigma}^2 = \frac{1}{n}\sum_{i=1}^n e_i^2$, where $e_i$ is the residual, not the error.
+
+- It can be shown (though it won't be detailed here) that $\mathbb{E}[\hat{\sigma}^2] = \frac{n-2}{n}\sigma^2$. Thus, it is biased. The unbiased estimator is $\hat{\sigma}^2 = \frac{n}{n-2}\frac{1}{n}\sum_{i=1}^n e_i^2$.
+
+- However, more is needed. Fortunately, with the assumption of normal errors, it can be demonstrated that:
+
+$$
+\frac{n\hat{\sigma}^2}{\sigma^2} \sim \chi^2_{n-2}.
+$$
+
+## Standard Error of $\hat{\beta}$
+
+- We know that $se(\hat{\beta}) = \frac{\sigma}{S_x\sqrt{n}}$.
+- However, we don't know the value of $\sigma$, so we can't compute the standard errors directly.
+- We can estimate the standard errors using the plug-in unbiased estimator $\frac{n-2}{n}\hat{\sigma}$ as a replacement for $\sigma$. Therefore, our estimated standard error is:
+
+$$
+\hat{se}(\hat{\beta}) = \frac{\hat{\sigma}}{S_x\sqrt{n-2}}
+$$.
+
+## Sampling Distribution of the New Standard Error
+
+- Now we need to determine the sampling distribution of the new $\hat{\beta}$.
+
+Using our old standard error, it's easy to show that:
+$$
+\frac{\hat{\beta} - \beta}{se(\hat{\beta})} \sim N(0,1)
+$$
+If we knew the true value of the variance $\sigma^2$, we could show:
+
+## Sampling Distribution of $\hat{se}(\hat{\beta})$
+
+$$
+\begin{align}
+P(\beta - 1.96 \times se(\hat{\beta}) < \hat{\beta} < \beta  + 1.96 \times se(\hat{\beta})) \\
+= P(-1.96 \times se(\hat{\beta}) < \hat{\beta} - \beta <  + 1.96 \times se(\hat{\beta})) \\
+= P(-1.96 < \frac{\hat{\beta} - \beta}{se(\hat{\beta})} < 1.96) \\
+= \Phi(-1.96) - \Phi(1.96) = 0.95
+\end{align}
+$$
+
+- Without divine intervention, we need to use $\hat{se}(\hat{\beta})$ instead.
+
+## Sampling Distribution of $\hat{se}(\hat{\beta})$ (cont.)
+
+We'll use a fact (which I won't prove) now.
+
+If $Z \sim N(0,1)$, $S^2 \sim \chi^2_d$ and $Z$ and $S^2$ are independent, then:
+$$
+\frac{Z}{\sqrt{S^2/d}} \sim t_d
+$$
+
+Applying this fact, we have:
+
+## Sampling Dist. of $\hat{se}(\hat{\beta})$ (cont.2)
+<style>
+.small-font {
+    font-size: 80%;
+}
+</style>
+
+<div class="small-font">
+$$
+\begin{align}
+\frac{\hat{\beta} - \beta}{\hat{se}(\hat{\beta})} = \frac{\hat{\beta} - \beta}{\sigma} \times \frac{\sigma}{\hat{se}(\hat{\beta})} \\
+= \frac{\frac{\hat{\beta} - \beta}{\sigma}}{\frac{\hat{se}(\hat{\beta})}{\sigma}} = \frac{N(0,1/ns^2_x)}{\frac{\hat{\sigma}}{S_x\sqrt{n-2}}} \\
+= \frac{S_x \times N(0,1/ns^2_x)}{\frac{\hat{\sigma}}{\sigma \sqrt{n-2}}} = \frac{N(0,1/n)}{\frac{\hat{\sigma}}{\sigma \sqrt{n-2}}} \\
+= \frac{\sqrt{n} \times N(0,1/n)}{\frac{\sqrt{n} \times \hat{\sigma}}{\sigma \sqrt{n-2}}} = \frac{N(0,1)}{\frac{\sqrt{n\hat{\sigma}^2}}{\sqrt{\sigma^2 \times (n-2)}}} \\
+= \frac{N(0,1)}{\sqrt{\frac{n\hat{\sigma}^2}{\sigma^2 \times (n-2)}}} = \frac{N(0,1)}{\sqrt{\chi^2_{n-2}/(n-2)}} \sim t_d
+\end{align}
+$$.
+<div>
+## Hypothesis Testing
+
+This detailed derivation illustrates why we use the $t_d$ distribution with $d$ degrees of freedom instead of the Normal distribution for hypothesis testing.
+
+$$ 
+\frac{\hat{\beta} - \beta}{\hat{se}(\hat{\beta})} \sim t_d
+$$
+
+This approach is also applicable to computing confidence intervals.
+
+We can further explore what happens to the $t_d$ distribution as $n$ increases.
+
+Exercise: Run a simulation to demonstrate that it converges to a Normal distribution.
+
+## Hypothesis Testing and Confidence Intervals
+
+<style>
+.small-font {
+    font-size: 80%;
+}
+</style>
+
+<div class="small-font">
+
+If my null hypothesis is $\beta = 0$, then under the null model, I have:
+
+$$ 
+\frac{\hat{\beta}}{\hat{se}(\hat{\beta})} \sim t_d
+$$
+
+Suppose I collect data (30 df), estimate $\hat{\beta} = 2$, and get a standard error of $0.9$. 
+
+- Then I calculate $2/0.9 = 2.22$, which is the $t$ statistic.
+
+- I can compute the probability of observing a value as extreme or more extreme as the t-statistic in either tail of the $t_{30}$ distribution, also known as the p-value.
+- This is computed (within R) as follows: `2 * abs(1 - pt(2.22, df=30))`.
+<div>
+
+
+
+

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Linear Regression - Inference</title>
+  <title>Linear Regression - MLE and Inference</title>
 
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="chrome=1">
@@ -20,7 +20,7 @@
     var SLIDE_CONFIG = {
       // Slide settings
       settings: {
-                title: 'Linear Regression - Inference',
+                title: 'Linear Regression - MLE and Inference',
                         useBuilds: true,
         usePrettify: true,
         enableSlideAreas: true,
@@ -3069,18 +3069,21 @@ var loadDeck = function(event) {
   });
 };
 
-if (document.readyState !== "loading" &&
-    document.querySelector('slides') === null) { 
-  // if the document is done loading but our element hasn't yet appeared, defer
-  // loading of the deck
-  window.setTimeout(function() {
-    loadDeck(null);
-  }, 0);
-} else {
-  // still loading the DOM, so wait until it's finished
-  document.addEventListener("DOMContentLoaded", loadDeck);
-}
+if (!window.Shiny) {
+  // If Shiny is loaded, the slide deck is initialized in ioslides template
 
+  if (document.readyState !== "loading" &&
+      document.querySelector('slides') === null) {
+    // if the document is done loading but our element hasn't yet appeared, defer
+    // loading of the deck
+    window.setTimeout(function() {
+      loadDeck(null);
+    }, 0);
+  } else {
+    // still loading the DOM, so wait until it's finished
+    document.addEventListener("DOMContentLoaded", loadDeck);
+  }
+}
 
 
 </script>
@@ -3147,13 +3150,11 @@ ul.task-list{list-style: none;}
 <li><strong>Objective of the Lecture:</strong></li>
 </ul>
 
-<p>– Learn how to estimate simple regression parameters from data.</p>
+<p>– Learn what is the Maximum Likelihood Estimator (MLE)</p>
 
-<p>– Develop an ability to interpret the results of simple linear regression.</p>
+<p>– Lear how to make inference with MLE</p>
 
-<p>– Learn what Ordinary Least Squares (OLS) does and does not.</p>
-
-<p>– Lear that there is a difference between structural causal model and linear regression model.</p>
+<p>– Learn how to make inference using the \(t\) distribution</p>
 
 </article></slide><slide class=""><hgroup><h2>Maximum Likelihood</h2></hgroup><article  id="maximum-likelihood">
 
@@ -3245,15 +3246,15 @@ ul.task-list{list-style: none;}
 </article></slide><slide class=""><hgroup><h2>Properties and limitations of MLE</h2></hgroup><article  id="properties-and-limitations-of-mle">
 
 <ul>
-<li>MLE estimators are <strong>asymptotically efficient</strong>, meaning that its parameters estimates converge on the truth &ldquo;as quickly as possible&rdquo; as \(n\) grow.</li>
-<li>They’re also unbiased, as the OLS estimators, since they are the same.</li>
-<li>However, if the error is not Gaussian distributed, than the sampling distributions calculations we just did are wrong. So will be our hypothesis tests, confidence intervals etc.</li>
-<li>How wrong? It is hard to say, but let’s run some simulations to have at least an idea of how wrong.</li>
+<li>MLE estimators are <strong>asymptotically efficient</strong>, meaning their parameter estimates converge on the truth &ldquo;as quickly as possible&rdquo; as \(n\) grows.</li>
+<li>They are also unbiased, like the OLS estimators.</li>
+<li>However, if the error is not Gaussian distributed, then the sampling distribution calculations we just did are incorrect. Consequently, our hypothesis tests, confidence intervals, etc., will also be incorrect.</li>
+<li>How incorrect?</li>
 </ul>
 
 </article></slide><slide class=""><hgroup><h2>Simulation of a wrong assumption</h2></hgroup><article  id="simulation-of-a-wrong-assumption">
 
-<p>Let’s rum four simulations: 1. errors are normal. 2. errors are t-distributed. 3. errors are Beta distributed. 4. errors are a mixture of Normals. In every case, there is a fixed part of the DGP: \(\mu = \alpha + \beta x_i\), with \(\alpha = 5\) and \(\beta = 1\), \(x \sim N(2, 4)\). And the part that we change from each simulation, the distribution of the error term.</p>
+<p>Let’s run four simulations where: 1. errors are normal; 2. errors are t-distributed; 3. errors are Beta distributed; 4. errors are a mixture of Normals. In every case, there is a fixed part of the DGP: \(\mu = \alpha + \beta x_i\), with \(\alpha = 5\) and \(\beta = 1\), \(x \sim N(2, 4)\). And the part that we change from each simulation is the distribution of the error term.</p>
 
 </article></slide><slide class=""><hgroup><h2>Simulation of a wrong assumption - Normal errors</h2></hgroup><article  id="simulation-of-a-wrong-assumption---normal-errors">
 
@@ -3262,19 +3263,19 @@ ul.task-list{list-style: none;}
 ## lm(formula = y ~ x)
 ## 
 ## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -7.3772 -0.7441 -0.0019  0.7275  6.0618 
+##      Min       1Q   Median       3Q      Max 
+## -11.5450  -2.4560   0.0094   2.3458  11.9509 
 ## 
 ## Coefficients:
 ##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)  4.98558    0.05920   84.22   &lt;2e-16 ***
-## x            1.00871    0.02124   47.48   &lt;2e-16 ***
+## (Intercept)   5.2530     0.5428   9.678 6.06e-16 ***
+## x             0.9478     0.2076   4.567 1.44e-05 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
-## Residual standard error: 1.339 on 998 degrees of freedom
-## Multiple R-squared:  0.6932, Adjusted R-squared:  0.6929 
-## F-statistic:  2255 on 1 and 998 DF,  p-value: &lt; 2.2e-16</pre>
+## Residual standard error: 4.148 on 98 degrees of freedom
+## Multiple R-squared:  0.1755, Adjusted R-squared:  0.1671 
+## F-statistic: 20.85 on 1 and 98 DF,  p-value: 1.442e-05</pre>
 
 </article></slide><slide class=""><hgroup><h2>Simulation of a wrong assumption - t errors</h2></hgroup><article  id="simulation-of-a-wrong-assumption---t-errors">
 
@@ -3283,19 +3284,19 @@ ul.task-list{list-style: none;}
 ## lm(formula = y ~ x)
 ## 
 ## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -22.1316  -2.2322  -0.0056   2.1826  18.1854 
+##    Min     1Q Median     3Q    Max 
+## -9.985 -1.709 -0.082  1.996 16.619 
 ## 
 ## Coefficients:
 ##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)  4.95674    0.17759   27.91   &lt;2e-16 ***
-## x            1.02613    0.06373   16.10   &lt;2e-16 ***
+## (Intercept)  5.70908    0.41197  13.858  &lt; 2e-16 ***
+## x            0.95537    0.09747   9.802 3.26e-16 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
-## Residual standard error: 4.018 on 998 degrees of freedom
-## Multiple R-squared:  0.2062, Adjusted R-squared:  0.2054 
-## F-statistic: 259.2 on 1 and 998 DF,  p-value: &lt; 2.2e-16</pre>
+## Residual standard error: 3.896 on 98 degrees of freedom
+## Multiple R-squared:  0.495,  Adjusted R-squared:  0.4899 
+## F-statistic: 96.07 on 1 and 98 DF,  p-value: 3.261e-16</pre>
 
 </article></slide><slide class=""><hgroup><h2>Simulation of a wrong assumption - Beta errors</h2></hgroup><article  id="simulation-of-a-wrong-assumption---beta-errors">
 
@@ -3305,18 +3306,18 @@ ul.task-list{list-style: none;}
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -6.2099 -3.6465 -0.1204  3.5235  6.4001 
+## -5.8311 -3.2994 -0.4996  3.0187  7.0476 
 ## 
 ## Coefficients:
 ##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)  5.06869    0.17407   29.12   &lt;2e-16 ***
-## x            0.96472    0.06247   15.44   &lt;2e-16 ***
+## (Intercept)   5.2527     0.4993  10.520  &lt; 2e-16 ***
+## x             0.8502     0.1909   4.453 2.25e-05 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
-## Residual standard error: 3.938 on 998 degrees of freedom
-## Multiple R-squared:  0.1929, Adjusted R-squared:  0.1921 
-## F-statistic: 238.5 on 1 and 998 DF,  p-value: &lt; 2.2e-16</pre>
+## Residual standard error: 3.816 on 98 degrees of freedom
+## Multiple R-squared:  0.1683, Adjusted R-squared:  0.1598 
+## F-statistic: 19.83 on 1 and 98 DF,  p-value: 2.248e-05</pre>
 
 </article></slide><slide class=""><hgroup><h2>Simulation of a wrong assumption - Mixture of Normal errors</h2></hgroup><article  id="simulation-of-a-wrong-assumption---mixture-of-normal-errors">
 
@@ -3326,18 +3327,168 @@ ul.task-list{list-style: none;}
 ## 
 ## Residuals:
 ##      Min       1Q   Median       3Q      Max 
-## -14.6950  -3.0491   0.1808   3.0646  12.7297 
+## -13.3006  -3.0868   0.0075   2.9921   9.8697 
 ## 
 ## Coefficients:
 ##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)  4.78540    0.19580   24.44   &lt;2e-16 ***
-## x            1.14004    0.07027   16.23   &lt;2e-16 ***
+## (Intercept)   5.7533     0.5918   9.721 4.87e-16 ***
+## x             0.6512     0.2263   2.877  0.00492 ** 
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
-## Residual standard error: 4.43 on 998 degrees of freedom
-## Multiple R-squared:  0.2087, Adjusted R-squared:  0.2079 
-## F-statistic: 263.2 on 1 and 998 DF,  p-value: &lt; 2.2e-16</pre></article></slide>
+## Residual standard error: 4.523 on 98 degrees of freedom
+## Multiple R-squared:  0.0779, Adjusted R-squared:  0.0685 
+## F-statistic:  8.28 on 1 and 98 DF,  p-value: 0.004921</pre>
+
+</article></slide><slide class=""><hgroup><h2>Exercise</h2></hgroup><article  id="exercise">
+
+<ol>
+<li><p>Compute an &ldquo;empirical&rdquo; estimate of the true standard errors in each case by simulating many estimations of \(\hat{\beta}\), recording each value, and computing the variance and the square root of the variance (also known as standard error) of the estimates for each simulation. Verify that the average is close to the true value of \(\beta\).</p></li>
+<li><p>Investigate what happens when the sample size \(n\) increases (from 100 to 500 to 1000).</p></li>
+</ol>
+
+</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Inference</h2></hgroup><article  id="inference">
+
+</article></slide><slide class=""><hgroup><h2>Sampling Distribution</h2></hgroup><article  id="sampling-distribution">
+
+<ul>
+<li><p>We know that \(\hat{\beta} \sim N(\beta, \frac{\sigma^2}{nS^2_x})\).</p></li>
+<li><p>To make inferences, we need to know the true \(\beta\) and the error variance, which we don’t. Therefore, we manipulate the equation to remove one of the parameters of the probability distribution.</p></li>
+<li><p>\(\hat{\beta} - \beta \sim N(0, \frac{\sigma^2}{nS^2_x})\).</p></li>
+<li><p>We still have one unknown in the probability distribution. As a result, we need to estimate \(\sigma^2\).</p></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Sampling Distribution of \(\hat{\sigma^2}\)</h2></hgroup><article  id="sampling-distribution-of-hatsigma2">
+
+<ul>
+<li>The estimator of the variance can be defined as the sum of the squared residuals (since the mean of the residuals is zero) divided by \(n\).</li>
+</ul>
+
+<p>Formally: \(\hat{\sigma}^2 = \frac{1}{n}\sum_{i=1}^n e_i^2\), where \(e_i\) is the residual, not the error.</p>
+
+<ul>
+<li><p>It can be shown (though it won’t be detailed here) that \(\mathbb{E}[\hat{\sigma}^2] = \frac{n-2}{n}\sigma^2\). Thus, it is biased. The unbiased estimator is \(\hat{\sigma}^2 = \frac{n}{n-2}\frac{1}{n}\sum_{i=1}^n e_i^2\).</p></li>
+<li><p>However, more is needed. Fortunately, with the assumption of normal errors, it can be demonstrated that:</p></li>
+</ul>
+
+<p>\[
+\frac{n\hat{\sigma}^2}{\sigma^2} \sim \chi^2_{n-2}.
+\]</p>
+
+</article></slide><slide class=""><hgroup><h2>Standard Error of \(\hat{\beta}\)</h2></hgroup><article  id="standard-error-of-hatbeta">
+
+<ul>
+<li>We know that \(se(\hat{\beta}) = \frac{\sigma}{S_x\sqrt{n}}\).</li>
+<li>However, we don’t know the value of \(\sigma\), so we can’t compute the standard errors directly.</li>
+<li>We can estimate the standard errors using the plug-in unbiased estimator \(\frac{n-2}{n}\hat{\sigma}\) as a replacement for \(\sigma\). Therefore, our estimated standard error is:</li>
+</ul>
+
+<p>\[
+\hat{se}(\hat{\beta}) = \frac{\hat{\sigma}}{S_x\sqrt{n-2}}
+\].</p>
+
+</article></slide><slide class=""><hgroup><h2>Sampling Distribution of the New Standard Error</h2></hgroup><article  id="sampling-distribution-of-the-new-standard-error">
+
+<ul>
+<li>Now we need to determine the sampling distribution of the new \(\hat{\beta}\).</li>
+</ul>
+
+<p>Using our old standard error, it’s easy to show that: \[
+\frac{\hat{\beta} - \beta}{se(\hat{\beta})} \sim N(0,1)
+\] If we knew the true value of the variance \(\sigma^2\), we could show:</p>
+
+</article></slide><slide class=""><hgroup><h2>Sampling Distribution of \(\hat{se}(\hat{\beta})\)</h2></hgroup><article  id="sampling-distribution-of-hatsehatbeta">
+
+<p>\[
+\begin{align}
+P(\beta - 1.96 \times se(\hat{\beta}) &lt; \hat{\beta} &lt; \beta  + 1.96 \times se(\hat{\beta})) \\
+= P(-1.96 \times se(\hat{\beta}) &lt; \hat{\beta} - \beta &lt;  + 1.96 \times se(\hat{\beta})) \\
+= P(-1.96 &lt; \frac{\hat{\beta} - \beta}{se(\hat{\beta})} &lt; 1.96) \\
+= \Phi(-1.96) - \Phi(1.96) = 0.95
+\end{align}
+\]</p>
+
+<ul>
+<li>Without divine intervention, we need to use \(\hat{se}(\hat{\beta})\) instead.</li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Sampling Distribution of \(\hat{se}(\hat{\beta})\) (cont.)</h2></hgroup><article  id="sampling-distribution-of-hatsehatbeta-cont.">
+
+<p>We’ll use a fact (which I won’t prove) now.</p>
+
+<p>If \(Z \sim N(0,1)\), \(S^2 \sim \chi^2_d\) and \(Z\) and \(S^2\) are independent, then: \[
+\frac{Z}{\sqrt{S^2/d}} \sim t_d
+\]</p>
+
+<p>Applying this fact, we have:</p>
+
+</article></slide><slide class=""><hgroup><h2>Sampling Dist. of \(\hat{se}(\hat{\beta})\) (cont.2)</h2></hgroup><article  id="sampling-dist.-of-hatsehatbeta-cont.2">
+
+<style>
+.small-font {
+    font-size: 80%;
+}
+</style>
+
+<div class="small-font">
+
+\[
+\begin{align}
+\frac{\hat{\beta} - \beta}{\hat{se}(\hat{\beta})} = \frac{\hat{\beta} - \beta}{\sigma} \times \frac{\sigma}{\hat{se}(\hat{\beta})} \\
+= \frac{\frac{\hat{\beta} - \beta}{\sigma}}{\frac{\hat{se}(\hat{\beta})}{\sigma}} = \frac{N(0,1/ns^2_x)}{\frac{\hat{\sigma}}{S_x\sqrt{n-2}}} \\
+= \frac{S_x \times N(0,1/ns^2_x)}{\frac{\hat{\sigma}}{\sigma \sqrt{n-2}}} = \frac{N(0,1/n)}{\frac{\hat{\sigma}}{\sigma \sqrt{n-2}}} \\
+= \frac{\sqrt{n} \times N(0,1/n)}{\frac{\sqrt{n} \times \hat{\sigma}}{\sigma \sqrt{n-2}}} = \frac{N(0,1)}{\frac{\sqrt{n\hat{\sigma}^2}}{\sqrt{\sigma^2 \times (n-2)}}} \\
+= \frac{N(0,1)}{\sqrt{\frac{n\hat{\sigma}^2}{\sigma^2 \times (n-2)}}} = \frac{N(0,1)}{\sqrt{\chi^2_{n-2}/(n-2)}} \sim t_d
+\end{align}
+\].
+
+<div>
+
+</article></slide><slide class=""><hgroup><h2>Hypothesis Testing</h2></hgroup><article  id="hypothesis-testing">
+
+<p>This detailed derivation illustrates why we use the \(t_d\) distribution with \(d\) degrees of freedom instead of the Normal distribution for hypothesis testing.</p>
+
+<p>\[ 
+\frac{\hat{\beta} - \beta}{\hat{se}(\hat{\beta})} \sim t_d
+\]</p>
+
+<p>This approach is also applicable to computing confidence intervals.</p>
+
+<p>We can further explore what happens to the \(t_d\) distribution as \(n\) increases.</p>
+
+<p>Exercise: Run a simulation to demonstrate that it converges to a Normal distribution.</p>
+
+</article></slide><slide class=""><hgroup><h2>Hypothesis Testing and Confidence Intervals</h2></hgroup><article  id="hypothesis-testing-and-confidence-intervals">
+
+<style>
+.small-font {
+    font-size: 80%;
+}
+</style>
+
+<div class="small-font">
+
+
+<p>If my null hypothesis is \(\beta = 0\), then under the null model, I have:</p>
+
+<p>\[ 
+\frac{\hat{\beta}}{\hat{se}(\hat{\beta})} \sim t_d
+\]</p>
+
+<p>Suppose I collect data (30 df), estimate \(\hat{\beta} = 2\), and get a standard error of \(0.9\).</p>
+
+<ul>
+<li><p>Then I calculate \(2/0.9 = 2.22\), which is the \(t\) statistic.</p></li>
+<li><p>I can compute the probability of observing a value as extreme or more extreme as the t-statistic in either tail of the \(t_{30}\) distribution, also known as the p-value.</p></li>
+<li><p>This is computed (within R) as follows: <code>2 * abs(1 - pt(2.22, df=30))</code>.</p>
+
+<div>
+
+
+
+
+</li>
+</ul></article></slide>
 
 
   <slide class="backdrop"></slide>
@@ -3364,6 +3515,11 @@ ul.task-list{list-style: none;}
        window.jQuery(document).on('slideenter', function(e) {
          window.jQuery(e.target).trigger('shown');
       });
+    }
+    if (window.Shiny) {
+      // Initialize slides when this script appears on the page, since it
+      // indicates that the <slides> markup has been fully loaded.
+      window.loadDeck();
     }
   })();
 </script>
