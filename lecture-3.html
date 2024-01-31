@@ -3069,21 +3069,18 @@ var loadDeck = function(event) {
   });
 };
 
-if (!window.Shiny) {
-  // If Shiny is loaded, the slide deck is initialized in ioslides template
-
-  if (document.readyState !== "loading" &&
-      document.querySelector('slides') === null) {
-    // if the document is done loading but our element hasn't yet appeared, defer
-    // loading of the deck
-    window.setTimeout(function() {
-      loadDeck(null);
-    }, 0);
-  } else {
-    // still loading the DOM, so wait until it's finished
-    document.addEventListener("DOMContentLoaded", loadDeck);
-  }
+if (document.readyState !== "loading" &&
+    document.querySelector('slides') === null) { 
+  // if the document is done loading but our element hasn't yet appeared, defer
+  // loading of the deck
+  window.setTimeout(function() {
+    loadDeck(null);
+  }, 0);
+} else {
+  // still loading the DOM, so wait until it's finished
+  document.addEventListener("DOMContentLoaded", loadDeck);
 }
+
 
 
 </script>
@@ -3213,11 +3210,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }
 <li><strong>Objective of the Lecture:</strong></li>
 </ul>
 
-<p>– Learn what is the Maximum Likelihood Estimator (MLE)</p>
+<p>– Learn what how to use the matrix representation of regression</p>
 
-<p>– Lear how to make inference with MLE</p>
+<p>– Lear how to perform multiple regressions</p>
 
-<p>– Learn how to make inference using the \(t\) distribution</p>
+<p>– Learn how to interpret multiple regression</p>
 
 </article></slide><slide class=""><hgroup><h2>Multiple Regression</h2></hgroup><article  id="multiple-regression">
 
@@ -3460,7 +3457,7 @@ A %*% B</pre>
 <p>When there is an interaction term between predictors, the effect of one predictor on the response variable depends on the value of another predictor.</p>
 
 <ul>
-<li><strong>Example</strong>: If we have an interaction term \(\beta_3 X_1 X_2\), the effect of \(X_1\) on \(Y\) changes as \(X_2\) changes, and vice versa. This allows for non-additive effects between predictors.</li>
+<li><strong>Example</strong>: If we have an interaction term \(\beta_3 X_1 X_2\), the effect of \(X_1\) on \(Y\) changes as \(X_2\) changes, and vice versa. This allows for non-additive effects between predictors (non-linear model in variables).</li>
 </ul>
 
 </article></slide><slide class=""><hgroup><h2>4. Categorical Predictors (Binary)</h2></hgroup><article  id="categorical-predictors-binary">
@@ -3478,7 +3475,197 @@ A %*% B</pre>
 <li><strong>Functionally Related Predictors</strong>: Coefficients must be interpreted with caution due to multicollinearity.</li>
 <li><strong>Interaction Terms</strong>: Coefficients indicate how the effect of one predictor on the response changes with another predictor.</li>
 <li><strong>Categorical Predictors</strong>: Coefficients represent the mean difference in response between categories.</li>
-</ul></article></slide>
+</ul>
+
+</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Omitted Variable Bias</h2></hgroup><article  id="omitted-variable-bias">
+
+</article></slide><slide class=""><hgroup><h2>Multiple Regression vs. Separate Simple Regressions:</h2></hgroup><article  id="multiple-regression-vs.-separate-simple-regressions">
+
+<p>Running a regression with two variables (say) is not the same as running two separate regressions, one for each variable.</p>
+
+<p>This difference is due to the general correlation that exists between predictors.</p>
+
+<p>To understand this, assume the true model is \(Y = \alpha + \beta_1 \cdot X_1 + \beta_2 \cdot X_2 + \epsilon\).</p>
+
+<p>What would happen if we run a regression with just one predictor (\(X_1\))?</p>
+
+</article></slide><slide class=""><hgroup><h2>Properties of Covariance</h2></hgroup><article  id="properties-of-covariance">
+
+<p>We’ll use the following properties of covariance in this derivation:</p>
+
+<ol>
+<li><p>Let \(X\) and \(Y\) be two random variables, and \(A\) a constant. Then, \(\mathbb{Cov}[X, Y + A] = \mathbb{Cov}[X, Y] + \mathbb{Cov}[X, A]\). Since \(A\) is constant, \(\mathbb{Cov}[X, A] = 0\), hence \(\mathbb{Cov}[X, Y + A] = \mathbb{Cov}[X, Y]\).</p></li>
+<li><p>\(\mathbb{Cov}[X, Y \cdot A] = A \cdot \mathbb{Cov}[X, Y]\).</p></li>
+</ol>
+
+</article></slide><slide class=""><hgroup><h2>Single Predictor Model</h2></hgroup><article  id="single-predictor-model">
+
+<p>In a model with a single predictor, we have: \(Y = \alpha + \beta_1^* \cdot X_1 + \epsilon\)</p>
+
+<p>Here, \(\beta_1^*\) is designated for the equation with one predictor, to differentiate it from \(\beta_1\) in the true equation with two predictors.</p>
+
+<p>We know that \(\beta_1^* = \frac{\mathbb{Cov}[X_1, Y]}{\mathbb{Var}[X_1]}\)</p>
+
+<p>Let’s substitute the \(Y\) from the true model into the equation for \(\beta_1^*\).</p>
+
+</article></slide><slide class=""><hgroup><h2>Deriving \(\beta_1^*\)</h2></hgroup><article  id="deriving-beta_1">
+
+<p>\[
+\begin{align*}
+\beta_1^* = \frac{\mathbb{Cov}[X_1, \alpha + \beta_1 \cdot X_1 + \beta_2 \cdot X_2 + e]}{\mathbb{Var}[X_1]} \\
+= \frac{\beta_1 \cdot \mathbb{Cov}[X_1, X_1] + \beta_2 \cdot \mathbb{Cov}[X_1, X_2]}{\mathbb{Var}[X_1]} \\
+= \beta_1 + \frac{\beta_2 \cdot \mathbb{Cov}[X_1, X_2]}{\mathbb{Var}[X_1]}
+\end{align*}
+\]</p>
+
+<p>Thus, the slope \(\beta_1^*\) includes the direct contribution of \(X_1\) via \(\beta_1\) and the indirect contribution from its correlation with \(X_2\), via \(\beta_2\).</p>
+
+</article></slide><slide class=""><hgroup><h2>Implications and Omitted Variable Bias</h2></hgroup><article  id="implications-and-omitted-variable-bias">
+
+<p>Running a regression with one predictor when the true model has two predictors means that the coefficient \(\beta_1^*\) will be a blend of \(\beta_1\) and \(\beta_2\).</p>
+
+<p>Conversely, with the correct model using both predictors, \(\beta_1^*\) will reflect only the contribution of \(x_1\).</p>
+
+<p>One might wonder: what if the true model has more than two predictors? This leads to the concept of omitted variable bias. If we omit a variable \(X_k\) correlated with \(X_j\) (\(j \neq k\)) from the regression, the coefficient \(\beta_j\) will also reflect the effect of \(\beta_k\).</p>
+
+</article></slide><slide class=""><hgroup><h2>Causal Inference and Modern Approaches</h2></hgroup><article  id="causal-inference-and-modern-approaches">
+
+<p>This discussion isn’t about causality, but rather about the contribution to predicting our response variable.</p>
+
+<p>Before modern approaches like Rubin’s potential outcomes framework or Pearl’s Bayesian network models, controlling for as many variables as possible was thought to potentially eliminate omitted variable bias, thereby ensuring that \(\beta_1\) does estimate the causal effect.</p>
+
+<p>Today, we understand that the most reliable way to think about causality is using one of these two approaches, and checking (e.g., with potential outcomes) that the Conditional Independence Assumption (CIA) is plausible for causal interpretation of \(\beta_1\).</p>
+
+<p>Without a causal model, merely introducing regressors to control for omitted variable bias doesn’t allow causal inference, except in very simple cases or when CIA is implicitly guaranteed.</p>
+
+</article></slide><slide class=""><hgroup><h2>Multicollinearity</h2></hgroup><article  id="multicollinearity">
+
+<p>So far, we have not discussed the conditions under which the inverse matrix \(X&#39;X^{-1}\) exists.</p>
+
+<p>We know that not all matrices are invertible. Matrices with a zero determinant are non-invertible, similar to the concept that we cannot divide a scalar by zero.</p>
+
+<p>The determinant is zero when columns are not linearly independent, i.e., when one column (or more) is a linear combination of other columns. In our context, this happens when the correlation is \(1\) (or \(-1\)), leading to multicollinearity.</p>
+
+<p>Modern software, like R, will automatically drop one or more variables if this occurs, to ensure that the matrix is invertible. Thus, unless the correlation is perfect, multicollinearity is usually not a problem.</p>
+
+</article></slide><slide class=""><hgroup><h2>Robust Standard Error (toy model)</h2></hgroup><article  id="robust-standard-error-toy-model">
+
+<p>In the presence of heteroscedasticity or correlation in errors (such as temporal or spatial autocorrelation), we need to adjust the calculation of the standard error.</p>
+
+<p>Let’s see with a simple toy simulation how this problem can occur.</p>
+
+<pre class = 'prettyprint lang-r'>library(ggplot2)</pre>
+
+<pre >## Warning: package &#39;ggplot2&#39; was built under R version 4.3.2</pre>
+
+<pre class = 'prettyprint lang-r'>library(tidyverse)</pre>
+
+<pre >## Warning: package &#39;purrr&#39; was built under R version 4.3.1</pre>
+
+<pre >## Warning: package &#39;lubridate&#39; was built under R version 4.3.2</pre>
+
+<pre class = 'prettyprint lang-r'>set.seed(123)
+
+x &lt;- c(1:8, 10, 15)
+y &lt;- c(5 + rnorm(8, sd = 1.5), 40, 65)
+df &lt;- data.frame(y=y, x=x)
+
+df %&gt;%
+  ggplot(aes(x=x, y=y)) + geom_point()</pre>
+
+<p><img src="data:image/png;base64,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" width="720" /></p>
+
+<pre class = 'prettyprint lang-r'>fit &lt;- lm(y ~ x)</pre>
+
+</article></slide><slide class=""><hgroup><h2>Robust Standard Error (toy model cont.)</h2></hgroup><article  id="robust-standard-error-toy-model-cont.">
+
+<pre class = 'prettyprint lang-r'>summary(fit)</pre>
+
+<pre >## 
+## Call:
+## lm(formula = y ~ x)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -19.736  -6.320   2.465   8.326  12.481 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept) -11.0831     6.6974  -1.655  0.13655   
+## x             4.2401     0.9208   4.605  0.00174 **
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 11.53 on 8 degrees of freedom
+## Multiple R-squared:  0.7261, Adjusted R-squared:  0.6918 
+## F-statistic:  21.2 on 1 and 8 DF,  p-value: 0.001745</pre>
+
+<h4>Robust Standard Error - HC1</h4>
+
+<p>In our &ldquo;toy model&rdquo;, it doesn’t make sense to assume constant variance. It’s likely that the two outliers came from a distribution with much larger variance, leading to a larger standard error for the coefficient of variable \(x\).</p>
+
+<p>The question then is how to calculate different variances for these points. There are numerous ways to do this. The default in Stata, called &ldquo;HC1&rdquo; (Heteroscedasticity-Consistent), has the following formula for the robust standard error &ldquo;HC1&rdquo;:</p>
+
+<p>\[
+\frac{n}{n-k}\hat{e}^2
+\]</p>
+
+<p>where \(\hat{e}^2\) is the squared residuals and \(k\) is the number of parameters. In our simple model, \(k=2\).</p>
+
+</article></slide><slide class=""><hgroup><h2>Robust Standard Error - HC3</h2></hgroup><article  id="robust-standard-error---hc3">
+
+<p>The robust standard error in the R package &ldquo;sandwich&rdquo; uses &ldquo;HC3&rdquo;, which has a different formula and performs better in small samples. Its formula is:</p>
+
+<p>\[
+\frac{\hat{e}^2}{(1-h_i)^2}
+\]</p>
+
+</article></slide><slide class=""><hgroup><h2>Robust Standard Error in R</h2></hgroup><article  id="robust-standard-error-in-r">
+
+<p>In R, we can use the &ldquo;sandwich&rdquo; and &ldquo;lmtest&rdquo; packages to perform hypothesis testing with robust standard error.</p>
+
+<pre class = 'prettyprint lang-r'>library(lmtest)</pre>
+
+<pre >## Warning: package &#39;lmtest&#39; was built under R version 4.3.1</pre>
+
+<pre >## Warning: package &#39;zoo&#39; was built under R version 4.3.1</pre>
+
+<pre class = 'prettyprint lang-r'>library(sandwich)</pre>
+
+<pre >## Warning: package &#39;sandwich&#39; was built under R version 4.3.1</pre>
+
+<pre class = 'prettyprint lang-r'>coeftest(fit, vcovHC(fit, &quot;HC3&quot;))</pre>
+
+<pre >## 
+## t test of coefficients:
+## 
+##             Estimate Std. Error t value Pr(&gt;|t|)  
+## (Intercept) -11.0831     9.5413 -1.1616  0.27889  
+## x             4.2401     1.9176  2.2111  0.05798 .
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</pre>
+
+</article></slide><slide class=""><hgroup><h2>Checking for Outliers</h2></hgroup><article  id="checking-for-outliers">
+
+<p>One way to check for this issue is to look for large residuals and highly influential observations (high leverage values). A basic command in R allows us to visually inspect if this is the case. Points in the top right or bottom right corners indicate observations exerting influence in our model.</p>
+
+<p>Large residuals (or non-constant variance) may result from a poorly specified model (missing predictor, absence of interaction, nonlinear effects, etc.).</p>
+
+</article></slide><slide class=""><hgroup><h2>Robust standard errors - summary</h2></hgroup><article  id="robust-standard-errors---summary">
+
+<p>Robust standard errors are essential when dealing with heteroscedasticity or autocorrelation in errors. They ensure accurate standard error estimates under these conditions, leading to more reliable statistical inferences.</p>
+
+<p>There are many types of robust SEs.</p>
+
+<ul>
+<li><strong>HC0, HC1, HC2, HC3:</strong></li>
+<li><strong>HC1 (Heteroscedasticity-Consistent):</strong> Commonly used, adjusts for heteroscedasticity.</li>
+<li><strong>HC3:</strong> Preferred in small samples, adjusts the squared residuals based on leverage.</li>
+</ul>
+
+<p>Use of <code>lmtest</code> and <code>sandwich</code> packages in R for hypothesis testing with robust standard errors, accommodating for outliers and heteroscedasticity.</p>
+
+<p><strong>Detecting Influential Observations:</strong> Large residuals or high leverage points can indicate potential issues.</p></article></slide>
 
 
   <slide class="backdrop"></slide>
@@ -3505,11 +3692,6 @@ A %*% B</pre>
        window.jQuery(document).on('slideenter', function(e) {
          window.jQuery(e.target).trigger('shown');
       });
-    }
-    if (window.Shiny) {
-      // Initialize slides when this script appears on the page, since it
-      // indicates that the <slides> markup has been fully loaded.
-      window.loadDeck();
     }
   })();
 </script>

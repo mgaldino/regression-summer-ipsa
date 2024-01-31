@@ -8,11 +8,11 @@ output: ioslides_presentation
 
 - **Objective of the Lecture:** 
 
--- Learn what is the Maximum Likelihood Estimator (MLE)
+-- Learn what how to use the matrix representation of regression
 
--- Lear how to make inference with MLE
+-- Lear how to perform multiple regressions
 
--- Learn how to make inference using the $t$ distribution
+-- Learn how to interpret multiple regression
 
 ## Multiple Regression
 
@@ -208,7 +208,7 @@ When some predictors are functions of other predictors, the interpretation becom
 
 When there is an interaction term between predictors, the effect of one predictor on the response variable depends on the value of another predictor.
 
-- **Example**: If we have an interaction term \(\beta_3 X_1 X_2\), the effect of \(X_1\) on \(Y\) changes as \(X_2\) changes, and vice versa. This allows for non-additive effects between predictors.
+- **Example**: If we have an interaction term \(\beta_3 X_1 X_2\), the effect of \(X_1\) on \(Y\) changes as \(X_2\) changes, and vice versa. This allows for non-additive effects between predictors (non-linear model in variables).
 
 ## 4. Categorical Predictors (Binary)
 
@@ -223,4 +223,152 @@ With binary (0/1) categorical predictors, the coefficient represents the differe
 - **Interaction Terms**: Coefficients indicate how the effect of one predictor on the response changes with another predictor.
 - **Categorical Predictors**: Coefficients represent the mean difference in response between categories.
 
+#  Omitted Variable Bias
 
+## Multiple Regression vs. Separate Simple Regressions:
+
+Running a regression with two variables (say) is not the same as running two separate regressions, one for each variable.
+
+This difference is due to the general correlation that exists between predictors. 
+
+To understand this, assume the true model is $Y = \alpha + \beta_1 \cdot X_1 + \beta_2 \cdot X_2 + \epsilon$.
+
+What would happen if we run a regression with just one predictor ($X_1$)?
+
+## Properties of Covariance
+
+We'll use the following properties of covariance in this derivation:
+
+1. Let $X$ and $Y$ be two random variables, and $A$ a constant. Then, $\mathbb{Cov}[X, Y + A] = \mathbb{Cov}[X, Y] + \mathbb{Cov}[X, A]$. Since $A$ is constant, $\mathbb{Cov}[X, A] = 0$, hence $\mathbb{Cov}[X, Y + A] = \mathbb{Cov}[X, Y]$.
+
+2. $\mathbb{Cov}[X, Y \cdot A] = A \cdot \mathbb{Cov}[X, Y]$.
+
+## Single Predictor Model
+
+In a model with a single predictor, we have:
+$Y = \alpha + \beta_1^* \cdot X_1 + \epsilon$
+
+Here, $\beta_1^*$ is designated for the equation with one predictor, to differentiate it from $\beta_1$ in the true equation with two predictors.
+
+We know that $\beta_1^* = \frac{\mathbb{Cov}[X_1, Y]}{\mathbb{Var}[X_1]}$
+
+Let's substitute the $Y$ from the true model into the equation for $\beta_1^*$.
+
+## Deriving $\beta_1^*$
+
+$$
+\begin{align*}
+\beta_1^* = \frac{\mathbb{Cov}[X_1, \alpha + \beta_1 \cdot X_1 + \beta_2 \cdot X_2 + e]}{\mathbb{Var}[X_1]} \\
+= \frac{\beta_1 \cdot \mathbb{Cov}[X_1, X_1] + \beta_2 \cdot \mathbb{Cov}[X_1, X_2]}{\mathbb{Var}[X_1]} \\
+= \beta_1 + \frac{\beta_2 \cdot \mathbb{Cov}[X_1, X_2]}{\mathbb{Var}[X_1]}
+\end{align*}
+$$
+
+Thus, the slope $\beta_1^*$ includes the direct contribution of $X_1$ via $\beta_1$ and the indirect contribution from its correlation with $X_2$, via $\beta_2$.
+
+## Implications and Omitted Variable Bias
+
+Running a regression with one predictor when the true model has two predictors means that the coefficient $\beta_1^*$ will be a blend of $\beta_1$ and $\beta_2$.
+
+Conversely, with the correct model using both predictors, $\beta_1^*$ will reflect only the contribution of $x_1$.
+
+One might wonder: what if the true model has more than two predictors? This leads to the concept of omitted variable bias. If we omit a variable $X_k$ correlated with $X_j$ ($j \neq k$) from the regression, the coefficient $\beta_j$ will also reflect the effect of $\beta_k$.
+
+## Causal Inference and Modern Approaches
+
+This discussion isn't about causality, but rather about the contribution to predicting our response variable.
+
+Before modern approaches like Rubin's potential outcomes framework or Pearl's Bayesian network models, controlling for as many variables as possible was thought to potentially eliminate omitted variable bias, thereby ensuring that $\beta_1$ does estimate the causal effect.
+
+Today, we understand that the most reliable way to think about causality is using one of these two approaches, and checking (e.g., with potential outcomes) that the Conditional Independence Assumption (CIA) is plausible for causal interpretation of $\beta_1$.
+
+Without a causal model, merely introducing regressors to control for omitted variable bias doesn't allow causal inference, except in very simple cases or when CIA is implicitly guaranteed.
+
+## Multicollinearity
+
+So far, we have not discussed the conditions under which the inverse matrix $X'X^{-1}$ exists.
+
+We know that not all matrices are invertible. Matrices with a zero determinant are non-invertible, similar to the concept that we cannot divide a scalar by zero. 
+
+The determinant is zero when columns are not linearly independent, i.e., when one column (or more) is a linear combination of other columns. In our context, this happens when the correlation is $1$ (or $-1$), leading to multicollinearity.
+
+Modern software, like R, will automatically drop one or more variables if this occurs, to ensure that the matrix is invertible. Thus, unless the correlation is perfect, multicollinearity is usually not a problem.
+
+
+## Robust Standard Error (toy model)
+
+In the presence of heteroscedasticity or correlation in errors (such as temporal or spatial autocorrelation), we need to adjust the calculation of the standard error.
+
+Let's see with a simple toy simulation how this problem can occur.
+
+```{r se-robusto toy, message=FALSE}
+library(ggplot2)
+library(tidyverse)
+set.seed(123)
+
+x <- c(1:8, 10, 15)
+y <- c(5 + rnorm(8, sd = 1.5), 40, 65)
+df <- data.frame(y=y, x=x)
+
+df %>%
+  ggplot(aes(x=x, y=y)) + geom_point()
+
+fit <- lm(y ~ x)
+```
+
+## Robust Standard Error (toy model cont.)
+```{r se-robusto toy print, message=FALSE}
+summary(fit)
+```
+
+
+#### Robust Standard Error - HC1
+In our "toy model", it doesn't make sense to assume constant variance. It's likely that the two outliers came from a distribution with much larger variance, leading to a larger standard error for the coefficient of variable $x$. 
+
+The question then is how to calculate different variances for these points. There are numerous ways to do this. The default in Stata, called "HC1" (Heteroscedasticity-Consistent), has the following formula for the robust standard error "HC1":
+
+$$
+\frac{n}{n-k}\hat{e}^2
+$$
+
+where $\hat{e}^2$ is the squared residuals and $k$ is the number of parameters. In our simple model, $k=2$.
+
+
+
+## Robust Standard Error - HC3
+
+The robust standard error in the R package "sandwich" uses "HC3", which has a different formula and performs better in small samples. Its formula is:
+
+$$
+\frac{\hat{e}^2}{(1-h_i)^2}
+$$
+
+## Robust Standard Error in R
+
+In R, we can use the "sandwich" and "lmtest" packages to perform hypothesis testing with robust standard error.
+
+```{r se-sandwich hc3, message=FALSE}
+library(lmtest)
+library(sandwich)
+coeftest(fit, vcovHC(fit, "HC3"))
+```
+
+## Checking for Outliers
+
+One way to check for this issue is to look for large residuals and highly influential observations (high leverage values). A basic command in R allows us to visually inspect if this is the case. Points in the top right or bottom right corners indicate observations exerting influence in our model.
+
+Large residuals (or non-constant variance) may result from a poorly specified model (missing predictor, absence of interaction, nonlinear effects, etc.).
+
+## Robust standard errors - summary
+
+Robust standard errors are essential when dealing with heteroscedasticity or autocorrelation in errors. They ensure accurate standard error estimates under these conditions, leading to more reliable statistical inferences.
+
+There are many types of robust SEs.
+
+- **HC0, HC1, HC2, HC3:** 
+- **HC1 (Heteroscedasticity-Consistent):** Commonly used, adjusts for heteroscedasticity.
+- **HC3:** Preferred in small samples, adjusts the squared residuals based on leverage.
+
+Use of `lmtest` and `sandwich` packages in R for hypothesis testing with robust standard errors, accommodating for outliers and heteroscedasticity.
+
+**Detecting Influential Observations:** Large residuals or high leverage points can indicate potential issues.
