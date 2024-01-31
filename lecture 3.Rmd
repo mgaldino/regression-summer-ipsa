@@ -1,0 +1,226 @@
+---
+title: "Multiple Linear Regression"
+author: "Manoel Galdino"
+date: "2024-01-26"
+output: ioslides_presentation
+---
+## Agenda for today's lecture
+
+- **Objective of the Lecture:** 
+
+-- Learn what is the Maximum Likelihood Estimator (MLE)
+
+-- Lear how to make inference with MLE
+
+-- Learn how to make inference using the $t$ distribution
+
+## Multiple Regression
+
+- Multiple regression is about using more than one predictor.
+- Most of the lessons learned still work
+- To understand it, it's easier with matrix, instead of summation. - The derivations are easier as well
+
+
+# Review of basic vector and matrix operations
+
+## Overview of Vectors
+
+Vectors are one-dimensional arrays of numbers, fundamental in representing data in multiple regression.
+
+- **Definition**: A vector in R can be created using the `c()` function. 
+  - Example: `c(1, 2, 3)` creates a vector containing 1, 2, and 3.
+- **Sum of Vectors**: The sum of two vectors is performed element-wise.
+  - For `u = (u1, u2)` and `v = (v1, v2)`, the sum is `u + v = (u1 + v1, u2 + v2)`.
+- **Multiplication by a Scalar**: Multiplying a vector by a scalar multiplies each element by that scalar.
+  - For scalar `a` and vector `v`, the product is `a * v`.
+
+```{r vector-example, echo=TRUE}
+# Example in R
+u <- c(1, 2)
+v <- c(3, 4)
+u + v  # Sum of vectors
+2 * u  # Multiplication by a scalar
+```
+
+## Overview of Matrices
+
+Matrices are two-dimensional arrays of numbers, which are especially useful in multiple regression for handling multiple variables simultaneously.
+
+- **Definition**: A matrix in R is created using the `matrix()` function. 
+  - Example: `matrix(1:6, nrow=2, ncol=3)` creates a 2x3 matrix.
+- **Sum of Matrices**: The sum of matrices is also performed element-wise. 
+  - If `A` and `B` are matrices, then their sum `C = A + B` has elements `c_ij = a_ij + b_ij`.
+- **Matrix Multiplication**: Matrix multiplication is more complex. The product of an `m x n` matrix `A` and an `n x p` matrix `B` is an `m x p` matrix `C`, where each element `c_ij` is the sum of the products of corresponding elements from the ith row of `A` and the jth column of `B`.
+
+```{r matrix-example, echo=TRUE}
+# Example in R
+A <- matrix(1:4, nrow=2)
+B <- matrix(5:8, nrow=2)
+# Sum of matrices
+A + B
+# Matrix multiplication
+A %*% B
+```
+
+## Multiple Linear Regression Model - Overview
+
+The basic multiple linear regression model can be described as follows:
+
+- **Predictors**: There are \( p \) predictors, denoted as \( X_1, X_2, \ldots, X_p \).
+  - No assumptions are made about the distribution of these predictors. They may be correlated or not.
+
+- **Response Variable**: 
+  - There is a single response variable, \( Y \).
+  - In the case of multiple response variables, the model would be a multivariate regression model.
+
+## Regression Equation
+
+The regression model is specified as:
+
+\[ y_i = \alpha + \beta_1 x_{1i} + \beta_2 x_{2i} + \ldots + \beta_p x_{pi} + e_i \]
+
+- We have \( p + 1 \) parameters or regression coefficients to estimate: the intercept \( \alpha \) and the slopes \( \beta_1, \beta_2, \ldots, \beta_p \).
+
+## Error Term Characteristics
+
+- The error term \( e_i \) in the model:
+  - Has a conditional expectation of zero.
+  - Possesses a constant conditional variance in the homoscedastic model.
+  - Is uncorrelated between observations.
+
+## Normality Assumption of the Error Term
+
+If normality of the error term is assumed:
+
+- The error \( e_i \) follows a multivariate normal distribution.
+  - Mean vector is zero.
+  - Variance-covariance matrix has zero off-diagonal elements (covariance).
+  - Main diagonal elements are \( \sigma^2 \), representing the variance.
+
+# Matrix Representation of Regression
+
+## Matrix Representation - Introduction
+
+In a matrix representation, the multiple linear regression model is efficiently described. This representation is key for understanding the model's linear algebra foundations.
+
+## Response Vector \( \mathbf{y} \)
+
+The response variable \( Y \) for \( n \) observations is represented as a column vector \( \mathbf{y} \) of dimension \( n \times 1 \):
+
+\[ \mathbf{y} = \begin{bmatrix} y_1 \\ y_2 \\ \vdots \\ y_n \end{bmatrix} \]
+
+This vector contains the observed values of the response variable for each observation.
+
+## Design Matrix \( \mathbf{X} \)
+
+The design matrix \( \mathbf{X} \) contains the predictor values and is of dimension \( n \times (p+1) \):
+
+\[ \mathbf{X} = \begin{bmatrix} 
+1 & x_{11} & x_{12} & \cdots & x_{1p} \\
+1 & x_{21} & x_{22} & \cdots & x_{2p} \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+1 & x_{n1} & x_{n2} & \cdots & x_{np} \\
+\end{bmatrix} \]
+
+The first column is typically a column of ones for the intercept, followed by columns for each predictor.
+
+## Coefficient Vector \( \boldsymbol{\beta} \)
+
+The regression coefficients, including the intercept, are represented as:
+
+\[ \boldsymbol{\beta} = \begin{bmatrix} \alpha \\ \beta_1 \\ \beta_2 \\ \vdots \\ \beta_p \end{bmatrix} \]
+
+This vector is of dimension \( (p+1) \times 1 \).
+
+## Error Vector \( \mathbf{e} \)
+
+The error terms are represented as a column vector \( \mathbf{e} \) of dimension \( n \times 1 \):
+
+\[ \mathbf{e} = \begin{bmatrix} e_1 \\ e_2 \\ \vdots \\ e_n \end{bmatrix} \]
+
+Each element represents the error for the corresponding observation.
+
+## Matrix Equation
+
+The multiple linear regression model in matrix form is given by:
+
+\[ \mathbf{y} = \mathbf{X} \boldsymbol{\beta} + \mathbf{e} \]
+
+This equation captures the relationship between the response variable and multiple predictors.
+
+---
+title: "Assumptions of the Multiple Linear Regression Model"
+output: 
+  beamer_presentation:
+    keep_tex: true
+---
+
+## Assumptions of the Model
+
+The assumptions of the multiple linear regression model can be expressed mathematically as follows:
+
+## Expectation of Error
+
+The expectation of the error term, given the predictors, is zero:
+
+\[ \mathbb{E}[\epsilon | X] = 0 \]
+
+This implies that the error term does not systematically vary with the predictors.
+
+## Variance of Error
+
+The variance of the error term, given the predictors, is constant and can be represented as:
+
+\[ \text{Var}[\epsilon | X] = \sigma^2 \mathbf{I} \]
+
+where \( \mathbf{I} \) is the identity matrix. 
+
+## Identity Matrix \( \mathbf{I} \)
+
+The identity matrix, \( \mathbf{I} \), is a special matrix with ones on the main diagonal and zeros elsewhere:
+
+\[ \mathbf{I} = \begin{bmatrix}
+1 & 0 & \cdots & 0 \\
+0 & 1 & \cdots & 0 \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \cdots & 1
+\end{bmatrix} \]
+
+This structure ensures homoscedasticity, meaning the error variance is the same across all observations.
+
+## Interpretation of Regression Coefficients
+
+Understanding the interpretation of regression coefficients is crucial in multiple linear regression analysis. This presentation covers different scenarios.
+
+## 1. Independent Predictors
+
+When no predictor is a function of another predictor, each coefficient represents the change in the response variable for a one-unit change in the predictor, holding all other predictors constant.
+
+- **Example**: If \(\beta_1\) is the coefficient for \(X_1\), a one-unit increase in \(X_1\) is associated with a \(\beta_1\) unit change in \(Y\), assuming other predictors remain unchanged.
+
+## 2. Predictors as Functions of Other Predictors
+
+When some predictors are functions of other predictors, the interpretation becomes more complex due to multicollinearity. The effect of one predictor depends on the level of the other predictor it's related to.
+
+- **Implication**: Careful statistical analysis and possibly dimensionality reduction techniques are needed to understand the individual contributions of predictors.
+
+## 3. Interaction Terms
+
+When there is an interaction term between predictors, the effect of one predictor on the response variable depends on the value of another predictor.
+
+- **Example**: If we have an interaction term \(\beta_3 X_1 X_2\), the effect of \(X_1\) on \(Y\) changes as \(X_2\) changes, and vice versa. This allows for non-additive effects between predictors.
+
+## 4. Categorical Predictors (Binary)
+
+With binary (0/1) categorical predictors, the coefficient represents the difference in the response variable's mean value when the predictor changes from 0 to 1, holding all other predictors constant.
+
+- **Example**: If \(\beta_4\) is the coefficient for a binary predictor \(X_4\) (where 1 represents the presence of a characteristic and 0 its absence), \(\beta_4\) represents the mean change in \(Y\) associated with the presence of this characteristic.
+
+## Summary
+
+- **Independent Predictors**: Coefficients show the isolated effect of each predictor.
+- **Functionally Related Predictors**: Coefficients must be interpreted with caution due to multicollinearity.
+- **Interaction Terms**: Coefficients indicate how the effect of one predictor on the response changes with another predictor.
+- **Categorical Predictors**: Coefficients represent the mean difference in response between categories.
+
+
