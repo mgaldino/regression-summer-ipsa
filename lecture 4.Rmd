@@ -12,11 +12,11 @@ output:
 
 - **Objective of the Lecture:** 
 
--- Learn what how to use the matrix representation of regression
+-- Learn to check the main assumptions of regression
 
--- Lear how to perform multiple regressions
+-- Learn what are the implications of assumptions violations
 
--- Learn how to interpret multiple regression
+-- Learn how to address the assumptions violations
 
 ## Model Check
 
@@ -70,7 +70,6 @@ If not, there is probably some non-linearity.
 library(tidyverse)
 library(ggplot2)
 
-# simulation of a misspecified regression (non-linear)
 # set seed (for reproducibility)
 set.seed(1234)
 n <- 100
@@ -105,7 +104,6 @@ df %>%
 
 ## Residuals vs. Predictor (sim2)
 ```{r residuals-predictor-sim2, echo=TRUE, message=FALSE, warning=FALSE}
-# simulation of a OVB
 # set seed (for reproducibility)
 set.seed(1234)
 n <- 100
@@ -141,8 +139,6 @@ df %>%
 
 ## Residuals vs. Predictor (sim3)
 ```{r residuals-predictor-sim3, echo=TRUE, message=FALSE, warning=FALSE}
-# simulation of a misspecified regression (non-linear)
-# set seed (for reproducibility)
 set.seed(1234)
 n <- 1000
 x <- runif(n, 1, 1000)
@@ -190,8 +186,6 @@ Bear in mind this plot only looks at the conditional expectation, not the uncond
 library(tidyverse)
 library(ggplot2)
 
-# simulation of a misspecified regression (non-linear)
-# set seed (for reproducibility)
 set.seed(1234)
 n <- 100
 x <- rnorm(n)
@@ -225,8 +219,7 @@ df %>%
 
 ## Squared Residuals vs. Predictor (sim2)
 ```{r sq-residuals-predictor-sim2, echo=TRUE, message=FALSE, warning=FALSE}
-# simulation of a OVB
-# set seed (for reproducibility)
+
 set.seed(1234)
 n <- 100
 x1 <- rnorm(n)
@@ -261,8 +254,7 @@ df %>%
 
 ## Squared Residuals vs. Predictor (sim3)
 ```{r sq-residuals-predictor-sim3, echo=TRUE, message=FALSE, warning=FALSE}
-# simulation of a misspecified regression (non-linear)
-# set seed (for reproducibility)
+
 set.seed(1234)
 n <- 1000
 x <- runif(n, 1, 1000)
@@ -296,8 +288,7 @@ df %>%
 
 ## Squared Residuals vs. Predictor (sim4)
 ```{r sq-residuals-predictor-sim4, echo=TRUE, message=FALSE, warning=FALSE}
-# error variance is not constant
-# set seed (for reproducibility)
+
 set.seed(1234)
 n <- 1000
 x <- rnorm(n)
@@ -331,7 +322,7 @@ coeftest(fit4, vcov = vcovHC(fit4, "HC1"))
 
 ## Squared Residuals vs. Predictor (sim5)
 ```{r sq-residuals-predictor-sim5, echo=TRUE, message=FALSE, warning=FALSE}
-# error variance is not constant - adaptad from https://rpubs.com/EmilOWK/heteroscedasticity
+# Error variance is not constant - adaptad from https://rpubs.com/EmilOWK/heteroscedasticity
 library(plyr) # mapvalues function
 set.seed(123)
 n <- 100
@@ -393,6 +384,8 @@ obj3 <- coeftest(fit5.3, vcov. = vcovHC(fit5.3, "HC3"))
 stargazer(obj1, obj2, obj2, type = "html")
 ```
 
+# Normality Assumption
+
 ## Normality of Residuals
 
 If we assume normality of the residuals, we can check if they are indeed normal. 
@@ -408,8 +401,7 @@ One way to do this is by plotting the histogram of the residuals and overlaying 
 
 ## Squared Residuals vs. Predictor (sim6)
 ```{r normality-sim6, echo=TRUE, message=FALSE, warning=FALSE}
-# simulation of a misspecified regression (non-linear)
-# set seed (for reproducibility)
+
 set.seed(1234)
 n <- 1000
 x <- runif(n)

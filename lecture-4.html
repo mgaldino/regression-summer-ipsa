@@ -3210,11 +3210,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }
 <li><strong>Objective of the Lecture:</strong></li>
 </ul>
 
-<p>– Learn what how to use the matrix representation of regression</p>
+<p>– Learn to check the main assumptions of regression</p>
 
-<p>– Lear how to perform multiple regressions</p>
+<p>– Learn what are the implications of assumptions violations</p>
 
-<p>– Learn how to interpret multiple regression</p>
+<p>– Learn how to address the assumptions violations</p>
 
 </article></slide><slide class=""><hgroup><h2>Model Check</h2></hgroup><article  id="model-check" class="smaller ">
 
@@ -3267,7 +3267,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }
 <pre class = 'prettyprint lang-r'>library(tidyverse)
 library(ggplot2)
 
-# simulation of a misspecified regression (non-linear)
 # set seed (for reproducibility)
 set.seed(1234)
 n &lt;- 100
@@ -3319,8 +3318,7 @@ df %&gt;%
 
 </article></slide><slide class=""><hgroup><h2>Residuals vs. Predictor (sim2)</h2></hgroup><article  id="residuals-vs.-predictor-sim2" class="smaller ">
 
-<pre class = 'prettyprint lang-r'># simulation of a OVB
-# set seed (for reproducibility)
+<pre class = 'prettyprint lang-r'># set seed (for reproducibility)
 set.seed(1234)
 n &lt;- 100
 x1 &lt;- rnorm(n)
@@ -3372,9 +3370,7 @@ df %&gt;%
 
 </article></slide><slide class=""><hgroup><h2>Residuals vs. Predictor (sim3)</h2></hgroup><article  id="residuals-vs.-predictor-sim3" class="smaller ">
 
-<pre class = 'prettyprint lang-r'># simulation of a misspecified regression (non-linear)
-# set seed (for reproducibility)
-set.seed(1234)
+<pre class = 'prettyprint lang-r'>set.seed(1234)
 n &lt;- 1000
 x &lt;- runif(n, 1, 1000)
 e &lt;- rnorm(n, 0, sd=1)
@@ -3439,8 +3435,6 @@ df %&gt;%
 <pre class = 'prettyprint lang-r'>library(tidyverse)
 library(ggplot2)
 
-# simulation of a misspecified regression (non-linear)
-# set seed (for reproducibility)
 set.seed(1234)
 n &lt;- 100
 x &lt;- rnorm(n)
@@ -3491,9 +3485,7 @@ df %&gt;%
 
 </article></slide><slide class=""><hgroup><h2>Squared Residuals vs. Predictor (sim2)</h2></hgroup><article  id="squared-residuals-vs.-predictor-sim2" class="smaller ">
 
-<pre class = 'prettyprint lang-r'># simulation of a OVB
-# set seed (for reproducibility)
-set.seed(1234)
+<pre class = 'prettyprint lang-r'>set.seed(1234)
 n &lt;- 100
 x1 &lt;- rnorm(n)
 x &lt;- .5*x1 + rnorm(n)
@@ -3544,9 +3536,7 @@ df %&gt;%
 
 </article></slide><slide class=""><hgroup><h2>Squared Residuals vs. Predictor (sim3)</h2></hgroup><article  id="squared-residuals-vs.-predictor-sim3" class="smaller ">
 
-<pre class = 'prettyprint lang-r'># simulation of a misspecified regression (non-linear)
-# set seed (for reproducibility)
-set.seed(1234)
+<pre class = 'prettyprint lang-r'>set.seed(1234)
 n &lt;- 1000
 x &lt;- runif(n, 1, 1000)
 e &lt;- rnorm(n, 0, sd=1)
@@ -3596,9 +3586,7 @@ df %&gt;%
 
 </article></slide><slide class=""><hgroup><h2>Squared Residuals vs. Predictor (sim4)</h2></hgroup><article  id="squared-residuals-vs.-predictor-sim4" class="smaller ">
 
-<pre class = 'prettyprint lang-r'># error variance is not constant
-# set seed (for reproducibility)
-set.seed(1234)
+<pre class = 'prettyprint lang-r'>set.seed(1234)
 n &lt;- 1000
 x &lt;- rnorm(n)
 sigma &lt;- runif(n, min=1, max=20)
@@ -3666,7 +3654,7 @@ coeftest(fit4, vcov = vcovHC(fit4, &quot;HC3&quot;))</pre>
 
 </article></slide><slide class=""><hgroup><h2>Squared Residuals vs. Predictor (sim5)</h2></hgroup><article  id="squared-residuals-vs.-predictor-sim5" class="smaller ">
 
-<pre class = 'prettyprint lang-r'># error variance is not constant - adaptad from https://rpubs.com/EmilOWK/heteroscedasticity
+<pre class = 'prettyprint lang-r'># Error variance is not constant - adaptad from https://rpubs.com/EmilOWK/heteroscedasticity
 library(plyr) # mapvalues function
 set.seed(123)
 n &lt;- 100
@@ -4385,6 +4373,8 @@ Constant
 
 </table>
 
+</article></slide><slide class="segue dark nobackground level1"><hgroup class = 'auto-fadein'><h2>Normality Assumption</h2></hgroup><article  id="normality-assumption" class="smaller ">
+
 </article></slide><slide class=""><hgroup><h2>Normality of Residuals</h2></hgroup><article  id="normality-of-residuals" class="smaller ">
 
 <p>If we assume normality of the residuals, we can check if they are indeed normal.</p>
@@ -4402,9 +4392,7 @@ Constant
 
 </article></slide><slide class=""><hgroup><h2>Squared Residuals vs. Predictor (sim6)</h2></hgroup><article  id="squared-residuals-vs.-predictor-sim6" class="smaller ">
 
-<pre class = 'prettyprint lang-r'># simulation of a misspecified regression (non-linear)
-# set seed (for reproducibility)
-set.seed(1234)
+<pre class = 'prettyprint lang-r'>set.seed(1234)
 n &lt;- 1000
 x &lt;- runif(n)
 e &lt;- runif(n)
