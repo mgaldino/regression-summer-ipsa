@@ -1,0 +1,451 @@
+---
+title: "Model checking"
+author: "Manoel Galdino"
+date: "2024-01-26"
+output: 
+  ioslides_presentation:
+    widescreen: true
+    smaller: true
+
+---
+## Agenda for today's lecture
+
+- **Objective of the Lecture:** 
+
+-- Learn what how to use the matrix representation of regression
+
+-- Lear how to perform multiple regressions
+
+-- Learn how to interpret multiple regression
+
+## Model Check
+
+- The results that allow us to make inferences depending on model assumptions.
+- Therefore, we need to make sure the assumptions are correct
+- And what to do (if any) when they are not met.
+
+## Residuals
+
+- Most of the time, checking assumptions is all about working with residuals
+- So, let's first review the definition and then what are the expected properties of residuals
+- Residuals definition: 
+
+The residuals for each observation $i$ are the differences between the predicted values from the regression model $\hat{y_i}$ and the observed values $y_i$. These residuals are sometimes called $\hat{e}$ to distinguish them from the population error, $e$.
+
+
+## Residuals Properties
+
+The residuals should have an expected value of zero, conditional on the predictors. Formally, $\mathbb{E}[\hat{e}|X=x] = 0$.
+
+If we assume homoskedasticity, they should have constant variance (which will rarely be the case).
+
+Since it's a sample, the probability of the residuals being completely uncorrelated among themselves is zero. However, the correlation should be low and converge to zero as $n$ approaches infinity.
+
+If we are assuming that the error follows a Gaussian (Normal) distribution, as in the Maximum Likelihood Estimation (MLE) model, the residuals should also be normally distributed.
+
+
+## Residuals checking
+
+For each property in the previous slide, We'll see how to check the property
+I will run simulations to present each check
+We will learn How to interpret the results of the checking
+And what to do when the assumption is violated.
+
+# Linearity assumption
+
+## Residuals vs. Predictor
+
+If the residuals should have $\mathbb{E}[\hat{e}|X=x] = 0$, it means that for each $x_i$, the residuals should have an average of zero. 
+
+In a plot, this implies that if we have enough points near each $x_i$, the dispersion of the residuals should appear random, without a clear pattern.
+
+This results in a horizontal line with an average of zero.
+
+Bear in mind that we already know that, by construction, the average will be always zero. We are checking if the conditional expectations of the residuals are zero everywhere.
+
+If not, there is probably some non-linearity.
+
+## Residuals vs. Predictor (sim1)
+```{r residuals-predictor-sim1, echo=TRUE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(ggplot2)
+
+# simulation of a misspecified regression (non-linear)
+# set seed (for reproducibility)
+set.seed(1234)
+n <- 100
+x <- rnorm(n)
+e <- rnorm(n)
+y <- 2 -1.5*x + 3*x^2 + e
+df_sim <- data.frame(y=y, x=x, x_sq = x^2)
+fit <-lm(y ~ x, df_sim)
+```
+
+## Residuals vs. Predictor (results1)
+```{r residuals-predictor-fit1, echo=TRUE, message=FALSE}
+summary(fit)
+```
+
+
+## Residuals vs. Predictor (check1) {.smaller}
+```{r residuals-predictor-check1, echo=TRUE, message=FALSE, out.height = "50%"}
+df <- data.frame(residuals = residuals(fit), predictor = df_sim$x)
+df %>%
+  ggplot(aes(x=predictor, y = residuals)) + geom_point() +   geom_smooth(method="lm", se=F) +  geom_smooth(se=F) 
+```
+
+## Residuals vs. Predictor (correction1) {.smaller}
+```{r residuals-predictor-correction1, echo=TRUE, message=FALSE, out.height = "80%"}
+fit_correct <-lm(y ~ x + x_sq, df_sim)
+df <- data.frame(residuals = residuals(fit_correct), predictor = df_sim$x)
+df %>%
+  ggplot(aes(x=predictor, y = residuals)) + geom_point() +   geom_smooth(method="lm", se=F) + geom_smooth(se=F) 
+```
+
+
+## Residuals vs. Predictor (sim2)
+```{r residuals-predictor-sim2, echo=TRUE, message=FALSE, warning=FALSE}
+# simulation of a OVB
+# set seed (for reproducibility)
+set.seed(1234)
+n <- 100
+x1 <- rnorm(n)
+x <- .5*x1 + rnorm(n)
+e <- rnorm(n)
+y <- 2 -1.5*x + 3*x1 + e
+df_sim2 <- data.frame(y=y, x=x, x1 = x1)
+fit2 <-lm(y ~ x, df_sim2)
+```
+
+## Residuals vs. Predictor (results2)
+```{r residuals-predictor-fit2, echo=TRUE, message=FALSE}
+summary(fit2)
+```
+
+
+## Residuals vs. Predictor (check2) {.smaller}
+```{r residuals-predictor-check2, echo=TRUE, message=FALSE, out.height = "50%"}
+df <- data.frame(residuals = residuals(fit2), predictor = df_sim2$x)
+df %>%
+  ggplot(aes(x=predictor, y = residuals)) + geom_point() +   geom_smooth(method="lm", se=F) + geom_smooth(se=F) 
+```
+
+## Residuals vs. Predictor (correction2) {.smaller}
+```{r residuals-predictor-correction2, echo=TRUE, message=FALSE, out.height = "80%"}
+fit_correct2 <-lm(y ~ x + x1, df_sim2)
+df <- data.frame(residuals = residuals(fit_correct2), predictor = df_sim2$x)
+df %>%
+  ggplot(aes(x=predictor, y = residuals)) + geom_point() +   geom_smooth(method="lm", se=F)+ geom_smooth(se=F) 
+```
+
+
+## Residuals vs. Predictor (sim3)
+```{r residuals-predictor-sim3, echo=TRUE, message=FALSE, warning=FALSE}
+# simulation of a misspecified regression (non-linear)
+# set seed (for reproducibility)
+set.seed(1234)
+n <- 1000
+x <- runif(n, 1, 1000)
+e <- rnorm(n, 0, sd=1)
+y <- 2 -3*log(x) + e
+df_sim3 <- data.frame(y=y, x=x, log_x = log(x))
+fit3 <-lm(y ~ x, df_sim3)
+```
+
+## Residuals vs. Predictor (results3)
+```{r residuals-predictor-fit3, echo=TRUE, message=FALSE}
+summary(fit3)
+```
+
+
+## Residuals vs. Predictor (check3) {.smaller}
+```{r residuals-predictor-check3, echo=TRUE, message=FALSE, out.height = "50%"}
+df <- data.frame(residuals = residuals(fit3), predictor = df_sim3$x)
+df %>%
+  ggplot(aes(x=predictor, y = residuals)) + geom_point() +   geom_smooth(method="lm", se=F)+ geom_smooth(se=F) 
+```
+
+## Residuals vs. Predictor (correction3) {.smaller}
+```{r residuals-predictor-correction3, echo=TRUE, message=FALSE, out.height = "80%"}
+fit_correct3 <-lm(y ~ log_x, df_sim3)
+df <- data.frame(residuals = residuals(fit_correct3), predictor = df_sim3$x)
+df %>%
+  ggplot(aes(x=predictor, y = residuals)) + geom_point() +   geom_smooth(method="lm", se=F)+ geom_smooth(se=F) 
+```
+
+# Homoskedasticity assumption
+
+## Magnitude of Residuals vs. Predictor
+
+Given that $\mathbb{E}[\hat{e}|X] = 0$, it follows that $\mathbb{Var}[\hat{e}|X] = \mathbb{E}[\hat{e}^2|X]$.
+
+Therefore, if we assume homoskedasticity, i.e., that $\mathbb{Var}[\hat{e}|X] = \sigma^2$, we can check this assumption by looking at the conditional expectation of the squared residuals. 
+
+We can do this by plotting the squared residuals against the predictor.
+
+Bear in mind this plot only looks at the conditional expectation, not the unconditional expectation.
+
+## Squared Residuals vs. Predictor (sim1)
+```{r sq-residuals-predictor-sim1, echo=TRUE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(ggplot2)
+
+# simulation of a misspecified regression (non-linear)
+# set seed (for reproducibility)
+set.seed(1234)
+n <- 100
+x <- rnorm(n)
+e <- rnorm(n)
+y <- 2 -1.5*x + 3*x^2 + e
+df_sim <- data.frame(y=y, x=x, x_sq = x^2)
+fit <-lm(y ~ x, df_sim)
+```
+
+## Squared Residuals vs. Predictor (results1)
+```{r sq-residuals-predictor-fit1, echo=TRUE, message=FALSE}
+summary(fit)
+```
+
+
+## Squared Residuals vs. Predictor (check1) {.smaller}
+```{r sq-residuals-predictor-check1, echo=TRUE, message=FALSE, out.height = "50%"}
+df <- data.frame(residuals = residuals(fit)^2, predictor = df_sim$x)
+df %>%
+  ggplot(aes(x=predictor, y = residuals)) + geom_point() +   geom_smooth(method="lm", se=F) + geom_smooth(se=F) 
+```
+
+## Squared Residuals vs. Predictor (correction1) {.smaller}
+```{r sq-residuals-predictor-correction1, echo=TRUE, message=FALSE, out.height = "80%"}
+fit_correct <-lm(y ~ x + x_sq, df_sim)
+df <- data.frame(residuals = residuals(fit_correct)^2, predictor = df_sim$x)
+df %>%
+  ggplot(aes(x=predictor, y = residuals)) + geom_point() +   geom_smooth(method="lm", se=F) + geom_smooth(se=F) 
+```
+
+
+## Squared Residuals vs. Predictor (sim2)
+```{r sq-residuals-predictor-sim2, echo=TRUE, message=FALSE, warning=FALSE}
+# simulation of a OVB
+# set seed (for reproducibility)
+set.seed(1234)
+n <- 100
+x1 <- rnorm(n)
+x <- .5*x1 + rnorm(n)
+e <- rnorm(n)
+y <- 2 -1.5*x + 3*x1 + e
+df_sim2 <- data.frame(y=y, x=x, x1 = x1)
+fit2 <-lm(y ~ x, df_sim2)
+```
+
+## Squared Residuals vs. Predictor (results2)
+```{r sq-residuals-predictor-fit2, echo=TRUE, message=FALSE}
+summary(fit2)
+```
+
+
+## Squared Residuals vs. Predictor (check2) {.smaller}
+```{r sq-residuals-predictor-check2, echo=TRUE, message=FALSE, out.height = "50%"}
+df <- data.frame(residuals = residuals(fit2)^2, predictor = df_sim2$x)
+df %>%
+  ggplot(aes(x=predictor, y = residuals)) + geom_point() +   geom_smooth(method="lm", se=F) + geom_smooth(se=F) 
+```
+
+## Squared Residuals vs. Predictor (correction2) {.smaller}
+```{r sq-residuals-predictor-correction2, echo=TRUE, message=FALSE, out.height = "80%"}
+fit_correct2 <-lm(y ~ x + x1, df_sim2)
+df <- data.frame(residuals = residuals(fit_correct2)^2, predictor = df_sim2$x)
+df %>%
+  ggplot(aes(x=predictor, y = residuals)) + geom_point() +   geom_smooth(method="lm", se=F) + geom_smooth(se=F) 
+```
+
+
+## Squared Residuals vs. Predictor (sim3)
+```{r sq-residuals-predictor-sim3, echo=TRUE, message=FALSE, warning=FALSE}
+# simulation of a misspecified regression (non-linear)
+# set seed (for reproducibility)
+set.seed(1234)
+n <- 1000
+x <- runif(n, 1, 1000)
+e <- rnorm(n, 0, sd=1)
+y <- 2 -3*log(x) + e
+df_sim3 <- data.frame(y=y, x=x, log_x = log(x))
+fit3 <-lm(y ~ x, df_sim3)
+```
+
+## Squared Residuals vs. Predictor (results3)
+```{r sq-residuals-predictor-fit3, echo=TRUE, message=FALSE}
+summary(fit3)
+```
+
+
+## Squared Residuals vs. Predictor (check3) {.smaller}
+```{r sq-residuals-predictor-check3, echo=TRUE, message=FALSE, out.height = "50%"}
+df <- data.frame(residuals = residuals(fit3)^2, predictor = df_sim3$x)
+df %>%
+  ggplot(aes(x=predictor, y = residuals)) + geom_point() +geom_smooth(method="lm", se=F) + geom_smooth(se=F) 
+```
+
+## Squared Residuals vs. Predictor (correction3) {.smaller}
+```{r sq-residuals-predictor-correction3, echo=TRUE, message=FALSE, out.height = "80%"}
+fit_correct3 <-lm(y ~ log_x, df_sim3)
+df <- data.frame(residuals = residuals(fit_correct3)^2, predictor = df_sim3$x)
+df %>%
+  ggplot(aes(x=predictor, y = residuals)) + geom_point() +   geom_smooth(method="lm", se=F) + geom_smooth(se=F) 
+```
+
+
+## Squared Residuals vs. Predictor (sim4)
+```{r sq-residuals-predictor-sim4, echo=TRUE, message=FALSE, warning=FALSE}
+# error variance is not constant
+# set seed (for reproducibility)
+set.seed(1234)
+n <- 1000
+x <- rnorm(n)
+sigma <- runif(n, min=1, max=20)
+e <- rnorm(n, 0, sd=sigma)
+y <- 2 -.5*x + e
+df_sim4 <- data.frame(y=y, x=x)
+fit4 <-lm(y ~ x, df_sim4)
+```
+
+## Squared Residuals vs. Predictor (results4)
+```{r sq-residuals-predictor-fit4, echo=TRUE, message=FALSE}
+summary(fit4)
+```
+
+
+## Squared Residuals vs. Predictor (check4) {.smaller}
+```{r sq-residuals-predictor-check4, echo=TRUE, message=FALSE, out.height = "50%"}
+df <- data.frame(residuals = residuals(fit4)^2, predictor = df_sim4$x)
+df %>%
+  ggplot(aes(x=predictor, y = residuals)) + geom_point() +geom_smooth(method="lm", se=F) + geom_smooth(se=F) 
+```
+
+## Squared Residuals vs. Predictor (correction4) {.smaller}
+```{r sq-residuals-predictor-correction4, echo=TRUE, message=FALSE, warning=FALSE, out.height = "80%"}
+library(lmtest)
+library(sandwich)
+coeftest(fit4, vcov = vcovHC(fit4, "HC3"))
+coeftest(fit4, vcov = vcovHC(fit4, "HC1"))
+```
+
+## Squared Residuals vs. Predictor (sim5)
+```{r sq-residuals-predictor-sim5, echo=TRUE, message=FALSE, warning=FALSE}
+# error variance is not constant - adaptad from https://rpubs.com/EmilOWK/heteroscedasticity
+library(plyr) # mapvalues function
+set.seed(123)
+n <- 100
+HS_strength <- 5
+library(purrr)
+df <- tibble(
+  id = 1:n,
+  x = seq(0, 10, length.out = n),
+  y_noHS = x * 1 + rnorm(n),
+  y_linHS = x * 1 + rnorm(n)*seq(1, HS_strength, length.out = n),
+  y_nonlinHS = x * 1 + rnorm(n)*c(seq(HS_strength, 1, length.out = n/2),
+                                     seq(1, HS_strength, length.out = n/2))) %>% 
+  pivot_longer(cols = -c(x,id)) %>% 
+  mutate(    name = factor(name %>% mapvalues(c("y_noHS", "y_linHS", "y_nonlinHS"),
+                                              c("no HS", "linear HS", "nonlinear HS")), 
+                           levels = c("no HS", "linear HS", "nonlinear HS"))) %>%
+  dplyr::rename(y = value)
+fit5.1 <- lm(y ~x, data=dplyr::filter(df, name == "no HS"))
+fit5.2 <- lm(y ~x, data=dplyr::filter(df, name == "linear HS"))
+fit5.3 <- lm(y ~x, data=dplyr::filter(df, name == "nonlinear HS"))
+
+
+```
+
+```{r processing-5, echo=F}
+df_residuals <- data.frame(id = 1:n, resid = c(residuals(fit5.1), residuals(fit5.2), residuals(fit5.3)),
+                           name = rep(c("no HS", "linear HS", "nonlinear HS"), each=n)) 
+
+df <- df %>%
+  inner_join(df_residuals, by = join_by(id, name))
+  
+```
+## Squared Residuals vs. Predictor (results5)
+```{r sq-residuals-predictor-fit5, echo=TRUE, message=FALSE, results='asis'}
+library(stargazer)
+
+stargazer(fit5.1, fit5.2, fit5.3, type = "html")
+```
+
+
+## Squared Residuals vs. Predictor (check5) {.smaller}
+```{r sq-residuals-predictor-check5, echo=TRUE, message=FALSE, out.height = "50%"}
+df %>% 
+  ggplot(aes(x, resid^2)) +
+  geom_point() +
+  geom_smooth() +
+  geom_smooth(method = "lm", color = "orange") +
+  facet_wrap("name") 
+```
+
+## Squared Residuals vs. Predictor (correction5)
+```{r sq-residuals-predictor-correction5, echo=TRUE, message=FALSE, warning=FALSE, results='asis'}
+library(lmtest)
+library(sandwich)
+obj1 <- coeftest(fit5.1, vcov. = vcovHC(fit5.1, "HC3"))
+obj2 <- coeftest(fit5.2, vcov. = vcovHC(fit5.2, "HC3"))
+obj3 <- coeftest(fit5.3, vcov. = vcovHC(fit5.3, "HC3"))
+
+stargazer(obj1, obj2, obj2, type = "html")
+```
+
+## Normality of Residuals
+
+If we assume normality of the residuals, we can check if they are indeed normal. 
+
+One way to do this is by plotting the histogram of the residuals and overlaying the density of a normal distribution with a mean of zero (residuals have a mean of zero) and a standard deviation equal to the standard deviation of the residuals.
+
+## Q-Q Plots for Normality Check
+
+- A more traditional alternative for checking normality is the use of Q-Q plots, which stands for "quantile-quantile" plots.
+- The quantile function tells us the point that divides our probability distribution at exactly $p\%$.
+- For example, we can find the point that divides our data exactly in half (median), or at the first quartile, first percentile, in short, at any percentile of the distribution.
+- R has a function for this purpose, which is worth exploring to gain a better understanding.
+
+## Squared Residuals vs. Predictor (sim6)
+```{r normality-sim6, echo=TRUE, message=FALSE, warning=FALSE}
+# simulation of a misspecified regression (non-linear)
+# set seed (for reproducibility)
+set.seed(1234)
+n <- 1000
+x <- runif(n)
+e <- runif(n)
+y <- 2 - x + e
+df_sim6 <- data.frame(y=y, x=x)
+fit6 <-lm(y ~ x, df_sim6)
+```
+
+## Results (results6)
+```{r results-fit6, echo=TRUE, message=FALSE}
+summary(fit6)
+```
+
+## histogram for Normality Check (results6a) {.smaller}
+```{r normality-fit6, echo=TRUE, message=FALSE, out.height = "50%"}
+df <- data.frame(resid = residuals(fit6), x = df_sim6$x, 
+                 density_points = rnorm(length(residuals(fit6)) , 0, sd(residuals(fit6))))
+
+df %>%
+  ggplot(aes(resid)) + 
+  geom_histogram(aes(y = after_stat(density))) +  geom_density(aes(density_points), colour = "blue")
+```
+
+## Q-Q Plots for Normality Check (results6a) {.smaller}
+```{r qq-plot, echo=TRUE, message=FALSE, out.height = "50%"}
+df %>%
+  ggplot(aes(y=sort(resid), x=sort(density_points))) + geom_point() +
+  geom_abline(intercept = 0, slope = 1, colour ="blue")
+
+qqnorm(residuals(fit6))
+qqline(residuals(fit6))
+```
+
+## Quick check of everything
+```{r fast-check, echo=TRUE, message=FALSE, warning=FALSE, out.height = "50%"}
+library(performance)
+check_model(fit6)
+```
