@@ -1,31 +1,24 @@
 ---
-title: "Introduction to Linear Regression"
+title: "Linear Regression and the Conditional Expectation Function (CEF)"
 author: "Manoel Galdino"
 date: "2024-01-26"
-output:
-  xaringan::moon_reader:
-    self_contained: true
-    seal: false
-    nature:
-      highlightStyle: github
-      slideNumber: true
-      ratio: "16:9"
+output: 
+  ioslides_presentation:
+    keep_md: true
+    mathjax: default
 ---
-
 # Introduction
 
-### Agenda for today's lecture
+## Agenda for today's lecture
 
 - **Objective of the Lecture:** Introcuction of the Linear Regression Model and its relation to the Conditional Expectation Function
 - **Also Covered:** Define and explain the concept of the Conditional Expectation Function (CEF) and its relevance for Linear Regression.
 - **Brief Overview of CEF:** Introduction to the concept of expectation in statistics and how it extends to conditional expectation.
 - Learn that **linear regression is a special case of the CEF**.
 
----
-
 # Review of expectation, variance, and their properties
 
-### Expectation
+## Expectation
 
 - **Expectation of a Discrete Random Variable \(X\)**  
   The expectation of a discrete random variable \(X\), where the probability mass of \(x \in X\) is given by \(p(x)\), is defined by: 
@@ -37,8 +30,6 @@ output:
 
 ---
 
-### Expectation - cont.
-
 - **Expectation of a Function \(h(X)\) of \(X\)**  
   Similarly, for the same variable \(X\) above, the expectation of a function \(h(X)\) is given by 
   $$\int f(x) \cdot h(x) \, dx$$ 
@@ -46,17 +37,12 @@ output:
 
 - **Reminder: the expectation is a population concept.**
 
----
-
-# Variance
+## Variance
 
 - **Variance of a random variable \(X\)** 
 $$Var(X) = \mathbb{E}[(X - \mathbb{E}[X])^2]$$
 
----
-
-
-# Covariance
+## Covariance
 
 - **Covariance between two random variables \(X\) and \(Y\)**
 
@@ -66,10 +52,7 @@ $$Cov(X,Y) = \mathbb{E}[(X -  \mathbb{E}[X])*(Y -  \mathbb{E}[Y])]$$
 
 - Covariance is positive when both \(X\) and \(Y\) tend to have values above (or below) their means simultaneously, and negative when one is above and the other below their respective means.
 
-
----
-
-# Algebra with Expectation, Variance, and Covariance
+## Algebra with Expectation, Variance, and Covariance
 
 1. **Linearity of Expectation**
    $$\mathbb{E}[aX + bY] = a*\mathbb{E}[X] + b*\mathbb{E}[Y]$$
@@ -80,95 +63,56 @@ $$Cov(X,Y) = \mathbb{E}[(X -  \mathbb{E}[X])*(Y -  \mathbb{E}[Y])]$$
 3. **Covariance Identity**
    $$Cov(X,Y) = \mathbb{E}[X*Y] - \mathbb{E}[X]*\mathbb{E}[Y]$$
 
----
+## Algebra with Expectation, Variance, and Covariance (cont.)
 
-# Algebra with Expectation, Variance, and Covariance (cont.)
-
-4. **Covariance Symmetry**
+<ol start=3>
+<li> **Covariance Symmetry**
    $$Cov(X,Y) = Cov(Y,X)$$
 
-5. **Variance Nonlinearity**
+<li> **Variance Nonlinearity**
    $$Var(a*X + b) = a^2*Var(X)$$
 
-6. **Covariance Nonlinearity**
+<li> **Covariance Nonlinearity**
    $$Cov(a*X + b,Y) = a*Cov(Y,X)$$
-
----
+</ol>
 
 # Linear Regression Model
 
-
-### Deterministic Model
+## Deterministic Model
 - On eof the simplest model we could use is a deterministic model of the world.
 
 - A deterministic linear model is expressed as: 
 
-
+\[
 \begin{equation}
 Y_{i} = \alpha + \beta X_{i}
 \tag{1}
 \end{equation}
+\]
 
-- A deterministic model is __systematic__ and contains no error, therefore $Y$ is supposed to be perfectly predicted by $X$. This is illustrated in the next slide.
+- A deterministic model is __systematic__ and contains no error, therefore _$Y$ is supposed to be perfectly predicted by $X$_. This is illustrated in the next slide.
 
----
+## Derterministic model - cont.
 
-# Derterministic model - cont.
-.pull-left[
-```{r dols, echo=FALSE, warning=FALSE, fig.cap="", fig.retina = 2}
-library(broom)
-library(ggplot2)
-set.seed(5)
-y <- rnorm(5)
-x <- 1:5
-mod <- lm(y ~ x)
-df <- augment(mod)
+![Deterministic Model](lecture-0_files/figure-html/dols-1.png)
 
-ggplot(df) + 
-  geom_line(aes(x = x, y = .fitted), size = 1) +
-  geom_segment(aes(x = 1, y = -1, xend = 5, yend = -1), color = "black") +
-  geom_segment(aes(x = 1, y = -1, xend = 1, yend = 1), color = "black") +
-  geom_point(aes(x = 1, y = -0.54), size = 5, color = "blue") +
-  geom_point(aes(x = 1.95, y = -0.2), size = 5, color = "red") +
-  geom_point(aes(x = 4, y = 0.58), size = 5, color = "red") +
-  geom_segment(aes(x = 4, y = 0.58, xend = 4, yend = -0.2), color = "red", size = 0.5) +
-  geom_segment(aes(x = 1.95, y = -0.2, xend = 4, yend = -0.2), color = "red", size = 0.5) +
-  annotate("text", x = 1.15, y = -0.56, label = expression(alpha), color = "blue", size = 6) +
-  annotate("text", x = 4.2, y = 0.2, label = expression(Delta*"Y"), color = "red", size = 6) +
-  annotate("text", x = 3, y = -0.3, label = expression(Delta*"X"), color = "red", size = 6) +
-  annotate("text", x = 2.2, y = 0.5, label = expression("Y = "*alpha + beta*"X"[1]), color = "black", size = 7) +
-  lims(y = c(-1, 1), x = c(1, 5)) + 
-  labs(x = expression("X"[1]), y = expression("Y"[1])) +
-  theme(axis.text = element_blank(),
-        axis.ticks = element_blank())
-```
-]
+-  $\alpha$ and $\beta$ are the model parameters, and are constant terms. $\beta$ is the slope, or the change in $Y$ over the change in $X$. $\alpha$ is the intercept, or the value of $Y$ when $X$ is zero.  
 
-.pull-right[
--  $\alpha$ and $\beta$ are the model parameters, and are constant terms. 
-- $\beta$ is the slope, or the change in $Y$ over the change in $X$. 
-- $\alpha$ is the intercept, or the value of $Y$ when $X$ is zero.  
-]
-
----
-
-# Stochastic Linear Model
+## Stochastic Linear Model
 
 - In practice, our models are never perfect and it makes sense to include the possibility that they will make errors.
 - Thus, we can add an error to the model.
 - That is why sometimes we say the linear model is composed of a systematic and a random (Latin word for the Greek *stochastic*) term.
 
 
-
+\[
 \begin{equation}
 Y_{i} = \alpha + \beta X_{i} + \epsilon_i
 \tag{2}
 \end{equation}
+\]
 
-
-where $\epsilon_i$ is the error term.
-
----
+where \(\epsilon_i\) is the error term.
 
 # Conditional Expectation
 
@@ -183,8 +127,6 @@ where $\epsilon_i$ is the error term.
 - If \(Y\) is discrete, with values $\{y_1,  \dots , y_m\}$, then:
 $$\mathbb{E}[Y|X=x] = \sum^{m}_{j=1}y_j\cdot P_{Y|X=x}(y_j|X=x)$$
 
----
-
 ## Properties of Conditional Expectation
 
 <ol>
@@ -198,6 +140,8 @@ For example, $\mathbb{E}[XY + 2X^2|X] = X\mathbb{E}[Y|X] + 2X^2$
 In particular, if $X$ and $U$ are independent, and $\mathbb{E}[U] = 0$, then $\mathbb{E}[U|X] = 0$.
 <ol>
 
+## Properties of Conditional Expectation (cont.)
+
 <ol start=3>
 <li> Law of Iterated Expectations (LIE): $\mathbb{E}[\mathbb{E}[Y|X]] =\mathbb{E}[Y]$
 
@@ -207,8 +151,6 @@ Let's say we have the average wage conditional on gender (male, female). The unc
 
 <li> Properties 3 and 4 together implies that if $U$ and $X$ are random variables such that $\mathbb{E}[U|X] = 0$, then $\mathbb{E}[U] = 0$ and $U$ and $X$ are uncorrelated.
 <ol>
-
----
 
 ## Conditional Expectation Function
 
@@ -221,16 +163,12 @@ $$\mathbb{E}[WAGE|EDUC] = 1.05 + .45EDUC$$
 
 - The coefficient of .45 on EDUC implies that one year of education increases, on average (or in expectation) the wage in .45 monetary units 
 
----
-
 ## CEF as the Optimal Predictor
 
 - CEF is acknowledged as the best global predictor ever.
 - As measured by the Mean Squared Error (MSE).
 - Basis for various predictors in regression and machine learning.
 - Advanced AI, including Large Language Models like ChatGPT, cannot surpass CEF in prediction.
-
----
 
 ## Utilizing CEF
 
@@ -244,8 +182,6 @@ $$\mathbb{E}[WAGE|EDUC] = 1.05 + .45EDUC$$
 - The CEF can be written for multiple predictors as $\mathbb{E}[Y| X_1, X_2, ..., X_k] = m(x_1, x_2, ..., x_k)$.
 
 - For a single predictor \(X\), it's $\mathbb{E}[Y| X] = m(X)$.
-
----
 
 ## CEF Error
 
@@ -262,15 +198,15 @@ $$
 $$
 <ol>
 
+## CEF Error (cont.)
 - This property leads to the conditional expectation of the error \(e\) being zero:
 
 <p>
 \(\mathbb{E}[e|X] = \mathbb{E}[Y - m(X)|X]\) <br>
 \(= \mathbb{E}[Y|X] - \mathbb{E}[m(X)|X]\) <br>
-\(= m(X) - m(X) = 0\) <br>
+\(= m(X) - m(X)\ = 0) <br>
 </p>
 
----
 
 ## Unconditional Expectation of Error
 
@@ -291,50 +227,45 @@ $$
 \mathbb{E}[e] = \mathbb{E}[\mathbb{E}[e|X]] = \mathbb{E}[0] = 0
 $$
 
----
-
 ## CEF error is uncorrelated with X
 
 - The error of the CEF is uncorrelated with any function of \(X\).
-- Formally: $\mathbb{E}[h(x) \cdot e] = 0$. Particularly, for $h(x) = x$, it's $\mathbb{E}[x \cdot e] = 0$.
-- This implies error independence from $X$ on average.
+- Formally: \(\mathbb{E}[h(x) \cdot e] = 0\). Particularly, for \(h(x) = x\), it's \(\mathbb{E}[x \cdot e] = 0\).
+- This implies error independence from \(X\) on average.
 - Knowing \(X\) doesn't change the error's average estimate.
 
-- Why $\mathbb{E}[x \cdot e] = 0$ implies uncorrelatedness between $X$ and error?
+## Why \(\mathbb{E}[x \cdot e] = 0\) implies uncorrelatedness between X and error
 
 - The covariance between two variables \(x\) and \(e\) is defined as:
 
-$$
+\[
 \text{Cov}(x, e) = \mathbb{E}[(x - \mathbb{E}[x])(e - \mathbb{E}[e])]
-$$
-
+\]
 
 - Expanding the covariance formula:
 
+\[
 \begin{aligned}
 \text{Cov}(x, e) &= \mathbb{E}[x \cdot e - x \cdot \mathbb{E}[e] - \mathbb{E}[x] \cdot e + \mathbb{E}[x] \cdot \mathbb{E}[e]] \\
 &= \mathbb{E}[x \cdot e] - \mathbb{E}[x] \cdot \mathbb{E}[e] - \mathbb{E}[x] \cdot \mathbb{E}[e] + \mathbb{E}[x] \cdot \mathbb{E}[e] \\
 &= \mathbb{E}[x \cdot e] - \mathbb{E}[x] \cdot \mathbb{E}[e]
 \end{aligned}
+\]
 
----
+## Implication for Correlation
 
-# Implication for Correlation
+If the error term \(e\) has an expected value of zero (\(\mathbb{E}[e] = 0\)), then:
 
-If the error term $e$ has an expected value of zero $\mathbb{E}[e] = 0$, then:
-$$
+\[
 \text{Cov}(x, e) = \mathbb{E}[x \cdot e]
-$$
+\]
 
-Hence, if $\mathbb{E}[x \cdot e] = 0$, it implies no correlation between $x$ and $e$.
-
-
----
+Hence, if \(\mathbb{E}[x \cdot e] = 0\), it implies no correlation between \(x\) and \(e\).
 
 ## Variance
 
-- The variance of the error is: $\mathbb{E}[e^2] - \mathbb{E}^2[e] = \mathbb{E}[e^2] - \mathbb{E}[e]\mathbb{E}[e]$
-- Since, $\mathbb{E}[e] = 0$, then $\mathbb{E}[e^2] = \sigma^2$ is the variance.
+- The variance of the error is: $\mathbb{E}[e^2] - \mathbb{E}^2[e] = $\mathbb{E}[e^2] - \mathbb{E}[e]\mathbb{E}[e]$
+- Since, \mathbb{E}[e] = 0, then $\mathbb{E}[e^2] = \sigma^2$ is the variance.
 - If we add more covariates, the variance decreases.
 - Conditional variance $\mathbb{E}[e^2|X] = var(y|x)$
 - homoskedastic: this variance does not depend on x
@@ -347,27 +278,10 @@ Hence, if $\mathbb{E}[x \cdot e] = 0$, it implies no correlation between $x$ and
 - We will suppose that the CEF is linear or that we can approximate the true CEF with a linear one.
 - It is linear in parameters $\alpha$ and $\beta$
 
----
 ## Linear Regression
 
-```{r plotAjusteReta, echo=FALSE, message=FALSE, warning=FALSE}
-library(tidyverse)
-library(ggplot2)
-set.seed(1234)
-n <- 1000
-x <- rnorm(n)
-u <- rnorm(n)
-y <- 2 + 1.3*x + u
+![](lecture-0_files/figure-html/plotAjusteReta-1.png)<!-- -->
 
-df <- data.frame(y=y, x=x)
-df %>%
-  ggplot(aes(x, y)) + geom_point() + geom_smooth(se=F, method="lm") +
-  geom_abline(slope= .5, intercept = 1, colour="red") +
-  geom_abline(slope= 3, intercept = 3, colour="green", size=1) +
-  geom_abline(slope= 0, intercept = 2, colour="grey", size=1)
-```
-
----
 
 ## Linear Regression and Conditional Expectation Function
 
@@ -386,17 +300,13 @@ df %>%
 - Minimizes squared difference between $Y$ and $m(x)$ - aka the error
 - Interpretation: "Regression provides the best linear predictor for the $Y$ in the same way that the CEF is the best unrestricted predictor of $Y$" (MHE, p. 38).
 
----
-
 ## Regression Line as Best Approximation (Justification III)
 
 - Here the focus is on approximation rather than prediction.
 - Best approximation of a non-linear CEF is through the regression formula.
-- Minimizes the difference between $\mathbb{E}[Y|X]$ - aka the true CEF - and $m(x)$ - the approximated linear CEF.
-- Interpretation: "if we prefer to think about approximating  $\mathbb{E}[Y|X]$, as opposed to predicting Y, (...), even if the CEF is nonlinear, regression provides the best linear approximation ot it" (MHE, p. 38).
+- Minimizes the difference between \(\mathbb{E}[Y|X]\) - aka the true CEF - and \(m(x)\) - the approximated linear CEF.
+- Interpretation: "if we prefer to think about approximating  \(\mathbb{E}[Y|X]\), as opposed to predicting Y, (...), even if the CEF is nonlinear, regression provides the best linear approximation ot it" (MHE, p. 38).
 - Justification 3 is their favorite: describe essential features of the data, without trying to be exact.
-
----
 
 ## CEF and Causality
 
