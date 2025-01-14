@@ -121,9 +121,9 @@ $\hat{y} = \hat{\alpha} + \hat{\beta} x_i$.
 - If we take the derivatives with respect to $\alpha$ and $\beta$ and make them equal to zero, we find the values of $\alpha$ and $\beta$ that minimize the above sum.
 
 - The solution to this problem is: 
-$\hat{\alpha} = \mathbb{E}[Y] - \beta*\mathbb{E}[X]$ and $\hat{\beta} = C_{X,Y}/S_X^2$
+$\hat{\alpha} = \bar{y} - \hat{\beta}*\bar{x}$ and $\hat{\beta} = C_{X,Y}/S_X^2$
 
-The prediction from the fitted model $\hat{Y}$ is given by $\mathbb{E}[Y] - \beta*\mathbb{E}[X] + Cov(X,Y)/Var(X)*X$
+The prediction from the fitted model $\hat{Y}$ is given by $ \bar{y} - \hat{\beta}*\bar{x} +  \frac{C_{X,Y}}{S_X^2}X$
 
 - We call the Ordinary Least Squares (OLS) this estimator for the parameters of the model.
 
