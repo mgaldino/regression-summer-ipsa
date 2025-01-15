@@ -200,13 +200,13 @@ $$
 \mathbb{Var}[\hat{\beta}] = \mathbb{Var} \left( \frac{\beta +  \sum({x - \bar{x}})e_i}{nS_x^2} \right)
 $$
 
-We know that $\mathbb{Var}[x + a] = \mathbb{Var}[x]$. Hence, we can eliminate $\beta$ from the equation:
+- We know that $\mathbb{Var}[x + a] = \mathbb{Var}[x]$. Hence, we can eliminate $\beta$ from the equation:
 
 $$
 \mathbb{Var}[\hat{\beta}] = \mathbb{Var} \left( \frac{\sum({x - \bar{x}})e_i}{nS_x^2} \right)
 $$
 
-Since all observations of $x$ have been observed, the sum of differences from the mean is a constant. We also know that $\mathbb{Var}[x*a] = a^2\mathbb{Var[x]}$.
+- Since all observations of $x$ have been observed, the sum of differences from the mean is a constant. We also know that $\mathbb{Var}[x*a] = a^2\mathbb{Var[x]}$.
 
 ---
 

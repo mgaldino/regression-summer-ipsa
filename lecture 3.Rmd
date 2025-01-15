@@ -225,29 +225,38 @@ This structure ensures homoskedasticity, meaning the error variance is the same 
 
 ## Interpretation of Regression Coefficients
 
-Understanding the interpretation of regression coefficients is crucial in multiple linear regression analysis. This presentation covers different scenarios.
+- Understanding the interpretation of regression coefficients is crucial in multiple linear regression analysis. This presentation covers different scenarios.
 
-## 1. Independent Predictors
 
-When no predictor is a function of another predictor, each coefficient represents the change in the response variable for a one-unit change in the predictor, holding all other predictors constant.
+---
+## Independent Predictors
 
-- **Example**: If $\beta_1$ is the coefficient for \(X_1\), a one-unit increase in \(X_1\) is associated with a $\beta_1$ unit change in \(Y\), assuming other predictors remain unchanged.
+- When no predictor is a function of another predictor, each coefficient represents the change in the response variable for a one-unit change in the predictor, holding all other predictors constant.
 
-## 2. Predictors as Functions of Other Predictors
+- **Example**: If $\beta_1$ is the coefficient for $X_1$, a one-unit increase in $X_1$ is associated with a $\beta_1$ unit change in $Y$, assuming other predictors remain unchanged.
 
-When some predictors are functions of other predictors, the interpretation becomes more complex due to multicollinearity. The effect of one predictor depends on the level of the other predictor it's related to.
+---
+
+## Predictors as Functions of Other Predictors
+
+- When some predictors are functions of other predictors, the interpretation becomes more complex due to multicollinearity. The effect of one predictor depends on the level of the other predictor it's related to.
 
 - **Implication**: Careful statistical analysis and possibly dimensionality reduction techniques are needed to understand the individual contributions of predictors.
 
-## 3. Interaction Terms
+---
 
-When there is an interaction term between predictors, the effect of one predictor on the response variable depends on the value of another predictor.
+## Interaction Terms
+
+- When there is an interaction term between predictors, the effect of one predictor on the response variable depends on the value of another predictor.
 
 - **Example**: If we have an interaction term $\beta_3 X_1 X_2$, the effect of $X_1$ on $Y$ changes as $X_2$ changes, and vice versa. This allows for non-additive effects between predictors (non-linear model in variables).
 
-## 4. Categorical Predictors (Binary)
 
-With binary (0/1) categorical predictors, the coefficient represents the difference in the response variable's mean value when the predictor changes from 0 to 1, holding all other predictors constant.
+--- 
+
+## Categorical Predictors (Binary)
+
+- With binary (0/1) categorical predictors, the coefficient represents the difference in the response variable's mean value when the predictor changes from 0 to 1, holding all other predictors constant.
 
 - **Example**: If $\beta_4$ is the coefficient for a binary predictor $X_4$ (where 1 represents the presence of a characteristic and 0 its absence), $\beta_4$ represents the mean change in $Y$ associated with the presence of this characteristic.
 
