@@ -10,7 +10,7 @@ output: ioslides_presentation
 
 -- Learn what is the Maximum Likelihood Estimator (MLE)
 
--- Lear how to make inference with MLE
+-- Learn how to make inference with MLE
 
 -- Learn how to make inference using the $t$ distribution
 
@@ -86,7 +86,6 @@ $$
 - $\hat{\beta} \sim N(\beta, \frac{\sigma^2}{nS^2_x})$
 - Also, it's straightforward to derive the mean using the fact that if $X \sim N(\mu_x, \sigma^2_x)$ and $Y \sim N(\mu_y, \sigma^2_y)$ are independent, then for $Z = X + Y$, we have $Z \sim N(\mu_x + \mu_y, \sigma^2_x + \sigma^2_y)$.
 - Using the fact that error term is distributed as $e_i \sim N(0, \sigma^2)$, we get the mean very easily.
-
 
 ## Properties and limitations of MLE
 

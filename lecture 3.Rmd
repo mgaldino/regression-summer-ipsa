@@ -2,17 +2,27 @@
 title: "Multiple Linear Regression"
 author: "Manoel Galdino"
 date: "2024-01-26"
-output: ioslides_presentation
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    seal: false
+    nature:
+      highlightStyle: github
+      slideNumber: true
+      ratio: "16:9"
 ---
+
 ## Agenda for today's lecture
 
 - **Objectives of the Lecture:** 
 
 -- Learn how to use the matrix representation of regression
 
--- Lear how to perform multiple regressions
+-- Learn how to perform multiple regressions
 
 -- Learn how to interpret multiple regression
+
+---
 
 ## Multiple Regression
 
@@ -21,7 +31,9 @@ output: ioslides_presentation
 
 - To understand it, it's easier with matrix, instead of summation.
 
-- The derivations are easier as well.
+- Most of the derivations are easier as well.
+
+---
 
 # Review of basic vector and matrix operations
 
@@ -36,6 +48,8 @@ Vectors are one-dimensional arrays of numbers, fundamental in representing data 
 - **Multiplication by a Scalar**: Multiplying a vector by a scalar multiplies each element by that scalar.
   - For scalar `a` and vector `v`, the product is `a * v`.
 
+---
+
 ## Overview of Vectors - R
 
 ```{r vector-example, echo=TRUE}
@@ -45,6 +59,8 @@ v <- c(3, 4)
 u + v  # Sum of vectors
 2 * u  # Multiplication by a scalar
 ```
+
+---
 
 ## Overview of Matrices
 
@@ -57,7 +73,9 @@ Matrices are two-dimensional arrays of numbers, which are especially useful in m
   - If `A` and `B` are matrices, then their sum `C = A + B` has elements `c_ij = a_ij + b_ij`.
   
 - **Matrix Multiplication**: Matrix multiplication is more complex. The product of an `m x n` matrix `A` and an `n x p` matrix `B` is an `m x p` matrix `C`, where each element `c_ij` is the sum of the products of corresponding elements from the ith row of `A` and the jth column of `B`.
-  
+
+---
+
 ## Overview of Matrices (cont.)
 
 ```{r matrix-example, echo=TRUE}
@@ -70,28 +88,32 @@ A + B
 A %*% B
 ```
 
+---
+
 ## Multiple Linear Regression Model - Overview
 
 The basic multiple linear regression model can be described as follows:
 
-- **Predictors**: There are \( p \) predictors, denoted as \( X_1, X_2, \ldots, X_p \).
+- **Predictors**: There are $p$ predictors, denoted as $X_1, X_2, \ldots, X_p$.
   - No assumptions are made about the distribution of these predictors. They may be correlated or not.
 
 - **Response Variable**: 
-  - There is a single response variable, \( Y \).
+  - There is a single response variable, $Y$.
   - In the case of multiple response variables, the model would be a multivariate regression model.
 
 ## Regression Equation
 
 The regression model is specified as:
 
-\[ y_i = \alpha + \beta_1 x_{1i} + \beta_2 x_{2i} + \ldots + \beta_p x_{pi} + e_i \]
+$y_i = \alpha + \beta_1 x_{1i} + \beta_2 x_{2i} + \ldots + \beta_p x_{pi} + e_i$
 
-- We have \( p + 1 \) parameters or regression coefficients to estimate: the intercept \( \alpha \) and the slopes \( \beta_1, \beta_2, \ldots, \beta_p \).
+- We have $p + 1$ parameters or regression coefficients to estimate: the intercept $\alpha$ and the slopes $(\beta_1, \beta_2, \ldots, \beta_p)$.
+
+---
 
 ## Error Term Characteristics
 
-- The error term \( e_i \) in the model:
+- The error term $e_i$ in the model:
   - Has a conditional expectation of zero.
   - Possesses a constant conditional variance in the homoscedastic model.
   - Is uncorrelated between observations.
@@ -100,70 +122,79 @@ The regression model is specified as:
 
 If normality of the error term is assumed:
 
-- The error \( e_i \) follows a multivariate normal distribution.
+- The error $e_i$ follows a multivariate normal distribution.
   - Mean vector is zero.
   - Variance-covariance matrix has zero off-diagonal elements (covariance).
-  - Main diagonal elements are \( \sigma^2 \), representing the variance.
+  - Main diagonal elements are $\sigma^2$, representing the variance.
+
+---
 
 # Matrix Representation of Regression
 
-## Matrix Representation - Introduction
-
 In a matrix representation, the multiple linear regression model is efficiently described. This representation is key for understanding the model's linear algebra foundations.
 
-## Response Vector \( \mathbf{y} \)
+The response variable $Y$ for $n$ observations is represented as a column vector $\mathbf{y}$ of dimension $n \times 1$:
 
-The response variable \( Y \) for \( n \) observations is represented as a column vector \( \mathbf{y} \) of dimension \( n \times 1 \):
-
-\[ \mathbf{y} = \begin{bmatrix} y_1 \\ y_2 \\ \vdots \\ y_n \end{bmatrix} \]
+$$\mathbf{y} =
+\begin{bmatrix}
+y_1 \\
+y_2 \\
+\vdots \\
+y_n
+\end{bmatrix}$$
 
 This vector contains the observed values of the response variable for each observation.
 
-## Design Matrix \( \mathbf{X} \)
+---
 
-The design matrix \( \mathbf{X} \) contains the predictor values and is of dimension \( n \times (p+1) \):
+## Design Matrix $\mathbf{X}$
 
-\[ \mathbf{X} = \begin{bmatrix} 
+The design matrix $\mathbf{X}$ contains the predictor values and is of dimension $n \times (p+1)$:
+
+$$\mathbf{X} = \begin{bmatrix} 
 1 & x_{11} & x_{12} & \cdots & x_{1p} \\
 1 & x_{21} & x_{22} & \cdots & x_{2p} \\
 \vdots & \vdots & \vdots & \ddots & \vdots \\
 1 & x_{n1} & x_{n2} & \cdots & x_{np} \\
-\end{bmatrix} \]
+\end{bmatrix}$$
 
 The first column is typically a column of ones for the intercept, followed by columns for each predictor.
 
-## Coefficient Vector \( \boldsymbol{\beta} \)
+---
+
+## Coefficient Vector $\boldsymbol{\beta}$
 
 The regression coefficients, including the intercept, are represented as:
 
-\[ \boldsymbol{\beta} = \begin{bmatrix} \alpha \\ \beta_1 \\ \beta_2 \\ \vdots \\ \beta_p \end{bmatrix} \]
+$\boldsymbol{\beta} = \begin{bmatrix} \alpha \\ \beta_1 \\ \beta_2 \\ \vdots \\ \beta_p \end{bmatrix}$
 
-This vector is of dimension \( (p+1) \times 1 \).
+This vector is of dimension $(p+1) \times 1$.
 
-## Error Vector \( \mathbf{e} \)
+The error terms $\mathbf{e}$ are represented as a column vector $\mathbf{e}$ of dimension $n \times 1$:
 
-The error terms are represented as a column vector \( \mathbf{e} \) of dimension \( n \times 1 \):
-
-\[ \mathbf{e} = \begin{bmatrix} e_1 \\ e_2 \\ \vdots \\ e_n \end{bmatrix} \]
+$\mathbf{e} = \begin{bmatrix} e_1 \\ e_2 \\ \vdots \\ e_n \end{bmatrix}$
 
 Each element represents the error for the corresponding observation.
+
+---
 
 ## Matrix Equation
 
 The multiple linear regression model in matrix form is given by:
 
-\[ \mathbf{y} = \mathbf{X} \boldsymbol{\beta} + \mathbf{e} \]
+$\mathbf{y} = \mathbf{X} \boldsymbol{\beta} + \mathbf{e}$
 
 This equation captures the relationship between the response variable and multiple predictors.
 
-# Assumptions of the Model
+---
 
+# Assumptions of the Model
 
 ## Expectation of Error
 
 The expectation of the error term, given the predictors, is zero:
 
-\[ \mathbb{E}[\epsilon | X] = 0 \]
+$\mathbb{E}[\epsilon | X] = 0$
 
 This implies that the error term does not systematically vary with the predictors.
 
@@ -171,22 +202,26 @@ This implies that the error term does not systematically vary with the predictor
 
 The variance of the error term, given the predictors, is constant and can be represented as:
 
-\[ \text{Var}[\epsilon | X] = \sigma^2 \mathbf{I} \]
+$\text{Var}[\epsilon | X] = \sigma^2 \mathbf{I}$
 
-where \( \mathbf{I} \) is the identity matrix. 
+where $\mathbf{I}$ is the identity matrix. 
 
-## Identity Matrix \( \mathbf{I} \)
+---
 
-The identity matrix, \( \mathbf{I} \), is a special matrix with ones on the main diagonal and zeros elsewhere:
+## Identity Matrix
 
-\[ \mathbf{I} = \begin{bmatrix}
+The identity matrix, $\mathbf{I}$, is a special matrix with ones on the main diagonal and zeros elsewhere:
+
+$$\mathbf{I} = \begin{bmatrix}
 1 & 0 & \cdots & 0 \\
 0 & 1 & \cdots & 0 \\
 \vdots & \vdots & \ddots & \vdots \\
 0 & 0 & \cdots & 1
-\end{bmatrix} \]
+\end{bmatrix}$$
 
 This structure ensures homoskedasticity, meaning the error variance is the same across all observations.
+
+---
 
 ## Interpretation of Regression Coefficients
 
@@ -196,7 +231,7 @@ Understanding the interpretation of regression coefficients is crucial in multip
 
 When no predictor is a function of another predictor, each coefficient represents the change in the response variable for a one-unit change in the predictor, holding all other predictors constant.
 
-- **Example**: If \(\beta_1\) is the coefficient for \(X_1\), a one-unit increase in \(X_1\) is associated with a \(\beta_1\) unit change in \(Y\), assuming other predictors remain unchanged.
+- **Example**: If $\beta_1$ is the coefficient for \(X_1\), a one-unit increase in \(X_1\) is associated with a $\beta_1$ unit change in \(Y\), assuming other predictors remain unchanged.
 
 ## 2. Predictors as Functions of Other Predictors
 
@@ -208,13 +243,15 @@ When some predictors are functions of other predictors, the interpretation becom
 
 When there is an interaction term between predictors, the effect of one predictor on the response variable depends on the value of another predictor.
 
-- **Example**: If we have an interaction term \(\beta_3 X_1 X_2\), the effect of \(X_1\) on \(Y\) changes as \(X_2\) changes, and vice versa. This allows for non-additive effects between predictors (non-linear model in variables).
+- **Example**: If we have an interaction term $\beta_3 X_1 X_2$, the effect of $X_1$ on $Y$ changes as $X_2$ changes, and vice versa. This allows for non-additive effects between predictors (non-linear model in variables).
 
 ## 4. Categorical Predictors (Binary)
 
 With binary (0/1) categorical predictors, the coefficient represents the difference in the response variable's mean value when the predictor changes from 0 to 1, holding all other predictors constant.
 
-- **Example**: If \(\beta_4\) is the coefficient for a binary predictor \(X_4\) (where 1 represents the presence of a characteristic and 0 its absence), \(\beta_4\) represents the mean change in \(Y\) associated with the presence of this characteristic.
+- **Example**: If $\beta_4$ is the coefficient for a binary predictor $X_4$ (where 1 represents the presence of a characteristic and 0 its absence), $\beta_4$ represents the mean change in $Y$ associated with the presence of this characteristic.
+
+---
 
 ## Summary
 
@@ -222,6 +259,8 @@ With binary (0/1) categorical predictors, the coefficient represents the differe
 - **Functionally Related Predictors**: Coefficients must be interpreted with caution due to correlation among them.
 - **Interaction Terms**: Coefficients indicate how the effect of one predictor on the response changes with another predictor.
 - **Categorical Predictors**: Coefficients represent the mean difference in response between categories.
+
+---
 
 #  Omitted Variable Bias
 
@@ -233,7 +272,9 @@ This difference is due to the general correlation that exists between predictors
 
 To understand this, assume the true model is $Y = \alpha + \beta_1 \cdot X_1 + \beta_2 \cdot X_2 + \epsilon$.
 
-What would happen if we run a regression with just one predictor ($X_1$)?
+What would happen if we run a regression with just one predictor $X_1$?
+
+---
 
 ## Properties of Covariance
 
@@ -243,6 +284,8 @@ We'll use the following properties of covariance in this derivation:
 
 2. $\mathbb{Cov}[X, Y \cdot A] = A \cdot \mathbb{Cov}[X, Y]$.
 
+---
+
 ## Single Predictor Model
 
 In a model with a single predictor, we have:
@@ -250,21 +293,23 @@ $Y = \alpha + \beta_1^* \cdot X_1 + \epsilon$
 
 Here, $\beta_1^*$ is designated for the equation with one predictor, to differentiate it from $\beta_1$ in the true equation with two predictors.
 
-We know that $\beta_1^* = \frac{\mathbb{Cov}[X_1, Y]}{\mathbb{Var}[X_1]}$
+In the population, the formula for the slope is analog to the sample estimator: $\beta_1^* = \frac{\mathbb{Cov}[X_1, Y]}{\mathbb{Var}[X_1]}$
 
 Let's substitute the $Y$ from the true model into the equation for $\beta_1^*$.
 
+---
+
 ## Deriving $\beta_1^*$
 
-$$
-\begin{align*}
+$$\begin{align*}
 \beta_1^* = \frac{\mathbb{Cov}[X_1, \alpha + \beta_1 \cdot X_1 + \beta_2 \cdot X_2 + e]}{\mathbb{Var}[X_1]} \\
 = \frac{\beta_1 \cdot \mathbb{Cov}[X_1, X_1] + \beta_2 \cdot \mathbb{Cov}[X_1, X_2]}{\mathbb{Var}[X_1]} \\
 = \beta_1 + \frac{\beta_2 \cdot \mathbb{Cov}[X_1, X_2]}{\mathbb{Var}[X_1]}
-\end{align*}
-$$
+\end{align*}$$
 
 Thus, the slope $\beta_1^*$ includes the direct contribution of $X_1$ via $\beta_1$ and the indirect contribution from its correlation with $X_2$, via $\beta_2$.
+
+---
 
 ## Implications and Omitted Variable Bias
 
@@ -273,6 +318,8 @@ Running a regression with one predictor when the true model has two predictors m
 Conversely, with the correct model using both predictors, $\beta_1^*$ will reflect only the contribution of $x_1$.
 
 One might wonder: what if the true model has more than two predictors? This leads to the concept of omitted variable bias. If we omit a variable $X_k$ correlated with $X_j$ ($j \neq k$) from the regression, the coefficient $\beta_j$ will also reflect the effect of $\beta_k$.
+
+---
 
 ## Causal Inference and Modern Approaches
 
@@ -284,6 +331,8 @@ Today, we understand that the most reliable way to think about causality is usin
 
 Without a causal model, merely introducing regressors to control for omitted variable bias doesn't allow causal inference, except in very simple cases or when CIA is implicitly guaranteed.
 
+---
+
 ## Multicollinearity
 
 So far, we have not discussed the conditions under which the inverse matrix $X'X^{-1}$ exists.
@@ -294,6 +343,7 @@ The determinant is zero when columns are not linearly independent, i.e., when on
 
 Modern software, like R, will automatically drop one or more variables if this occurs, to ensure that the matrix is invertible. Thus, unless the correlation is perfect, multicollinearity is usually not a problem.
 
+---
 
 ## Robust Standard Error (toy model)
 
@@ -310,19 +360,26 @@ df <- data.frame(y=y, x=x)
 
 
 ```
+
+---
+
 ## Robust Standard Error (toy model cont. 1)
 
-```{r se-robusto toy fit, message=FALSE, warning=FALSE, echo=FALSE}
+```{r se-robusto toy fit, message=FALSE, warning=FALSE}
 df %>%
   ggplot(aes(x=x, y=y)) + geom_point()
 fit <- lm(y ~ x)
 ```
+
+---
 
 ## Robust Standard Error (toy model cont. 2)
 
 ```{r se-robusto toy print, message=FALSE}
 summary(fit)
 ```
+
+---
 
 ## Robust Standard Error - HC1
 In our "toy model", it doesn't make sense to assume constant variance. It's likely that the two outliers came from a distribution with much larger variance, leading to a larger standard error for the coefficient of variable $x$. 
@@ -335,7 +392,7 @@ $$
 
 where $\hat{e}^2$ is the squared residuals and $k$ is the number of parameters. In our simple model, $k=2$.
 
-
+---
 
 ## Robust Standard Error - HC3
 
@@ -345,6 +402,8 @@ $$
 \frac{\hat{e}^2}{(1-h_i)^2}
 $$
 
+---
+
 ## Robust Standard Error in R
 
 ```{r se-sandwich hc3, message=FALSE, warning=FALSE}
@@ -353,11 +412,58 @@ library(sandwich)
 coeftest(fit, vcovHC(fit, "HC3"))
 ```
 
+---
+
 ## Checking for Outliers
 
-One way to check for this issue is to look for large residuals and highly influential observations (high leverage values). A basic command in R allows us to visually inspect if this is the case. Points in the top right or bottom right corners indicate observations exerting influence in our model.
+- Outliers are trick.
 
-Large residuals (or non-constant variance) may result from a poorly specified model (missing predictor, absence of interaction, nonlinear effects, etc.).
+- There is no theoretical definition of what is an outlier. It is a mattter of subjective judgment.
+
+- Many tests and diagnostics has been proposed over the yeras (DFITS, Cook’s Distance, and Welsch Distance)
+
+- However, as Hansen says in his econometrics textbook, "they are not based on statistical theory" (p.85).
+
+- My recommended approach is to thjink about how the outlier changes the regression estimate.
+
+- DFBETA measures how much the regression coefficient changes when observation $i$ is omitted. 
+
+- The ratio of these changes to the coefficient’s standard error is called its DFBETA
+
+---
+
+# Example of outlier
+
+<img src="outlier_plot.png" alt="plot with influential observation" style="width:50%; height:50%;">
+
+
+
+
+---
+
+# Outlier Diagnostics
+```{r outliers data, message=FALSE, warning=FALSE, echo=FALSE}
+set.seed(2345)
+x <- runif(25, 1, 10)
+y <- rnorm(25, x +2, 2)
+x[26] <- 9
+y[26] <- 0
+
+data <- data.frame(x=x,
+                   y=y,
+                   group = c(rep("open", 25), "filled"))
+
+# Data without the 26th observation
+data_no26 <- data[1:25, ]
+fit <- lm(y ~ x, data)
+```
+
+```{r outliers, message=FALSE, warning=FALSE}
+library(car)
+plotdb <- dfbetaPlots(fit, id.n=1)
+```
+
+---
 
 ## Robust standard errors - summary
 
