@@ -35,7 +35,7 @@ The residuals for each observation $i$ are the differences between the predicted
 
 ## Residuals Properties
 
-The residuals should have an expected value of zero, conditional on the predictors. Formally, $\mathbb{E}[\hat{e}|X=x] = 0$.
+The residuals will always have an expected value of zero, conditional on the predictors. Formally, $\mathbb{E}[\hat{e}|X=x] = 0$.
 
 If we assume homoskedasticity, they should have constant variance (which will rarely be the case).
 
@@ -46,7 +46,7 @@ If we are assuming that the error follows a Gaussian (Normal) distribution, as i
 
 ## Residuals checking
 
-For each property in the previous slide, We'll see how to check the property
+We will try to check as many linear regression assumptions as possible
 I will run simulations to present each check
 We will learn How to interpret the results of the checking
 And what to do when the assumption is violated.
@@ -55,14 +55,11 @@ And what to do when the assumption is violated.
 
 ## Residuals vs. Predictor
 
-If the residuals should have $\mathbb{E}[\hat{e}|X=x] = 0$, it means that for each $x_i$, the residuals should have an average of zero. 
+Since the residuals will have $\mathbb{E}[\hat{e}|X=x] = 0$, it means that for each $x_i$, the residuals should have an average of zero. 
 
 In a plot, this implies that if we have enough points near each $x_i$, the dispersion of the residuals should appear random, without a clear pattern.
 
 This results in a horizontal line with an average of zero.
-
-Bear in mind that we already know that, by construction, the average will be always zero. We are checking if the conditional expectations of the residuals are zero everywhere.
-
 If not, there is probably some non-linearity.
 
 ## Residuals vs. Predictor (sim1)
@@ -203,17 +200,17 @@ summary(fit)
 
 ## Squared Residuals vs. Predictor (check1) {.smaller}
 ```{r sq-residuals-predictor-check1, echo=TRUE, message=FALSE, out.height = "50%"}
-df <- data.frame(residuals = residuals(fit)^2, predictor = df_sim$x)
+df <- data.frame(residuals_sq = residuals(fit)^2, predictor = df_sim$x)
 df %>%
-  ggplot(aes(x=predictor, y = residuals)) + geom_point() +   geom_smooth(method="lm", se=F) + geom_smooth(se=F) 
+  ggplot(aes(x=predictor, y = residuals_sq)) + geom_point() +   geom_smooth(method="lm", se=F) + geom_smooth(se=F) 
 ```
 
 ## Squared Residuals vs. Predictor (correction1) {.smaller}
 ```{r sq-residuals-predictor-correction1, echo=TRUE, message=FALSE, out.height = "80%"}
 fit_correct <-lm(y ~ x + x_sq, df_sim)
-df <- data.frame(residuals = residuals(fit_correct)^2, predictor = df_sim$x)
+df <- data.frame(residuals_sq = residuals(fit_correct)^2, predictor = df_sim$x)
 df %>%
-  ggplot(aes(x=predictor, y = residuals)) + geom_point() +   geom_smooth(method="lm", se=F) + geom_smooth(se=F) 
+  ggplot(aes(x=predictor, y = residuals_sq)) + geom_point() +   geom_smooth(method="lm", se=F) + geom_smooth(se=F) 
 ```
 
 
@@ -238,17 +235,17 @@ summary(fit2)
 
 ## Squared Residuals vs. Predictor (check2) {.smaller}
 ```{r sq-residuals-predictor-check2, echo=TRUE, message=FALSE, out.height = "50%"}
-df <- data.frame(residuals = residuals(fit2)^2, predictor = df_sim2$x)
+df <- data.frame(residuals_sq = residuals(fit2)^2, predictor = df_sim2$x)
 df %>%
-  ggplot(aes(x=predictor, y = residuals)) + geom_point() +   geom_smooth(method="lm", se=F) + geom_smooth(se=F) 
+  ggplot(aes(x=predictor, y = residuals_sq)) + geom_point() +   geom_smooth(method="lm", se=F) + geom_smooth(se=F) 
 ```
 
 ## Squared Residuals vs. Predictor (correction2) {.smaller}
 ```{r sq-residuals-predictor-correction2, echo=TRUE, message=FALSE, out.height = "80%"}
 fit_correct2 <-lm(y ~ x + x1, df_sim2)
-df <- data.frame(residuals = residuals(fit_correct2)^2, predictor = df_sim2$x)
+df <- data.frame(residuals_sq = residuals(fit_correct2)^2, predictor = df_sim2$x)
 df %>%
-  ggplot(aes(x=predictor, y = residuals)) + geom_point() +   geom_smooth(method="lm", se=F) + geom_smooth(se=F) 
+  ggplot(aes(x=predictor, y = residuals_sq)) + geom_point() +   geom_smooth(method="lm", se=F) + geom_smooth(se=F) 
 ```
 
 
@@ -272,17 +269,17 @@ summary(fit3)
 
 ## Squared Residuals vs. Predictor (check3) {.smaller}
 ```{r sq-residuals-predictor-check3, echo=TRUE, message=FALSE, out.height = "50%"}
-df <- data.frame(residuals = residuals(fit3)^2, predictor = df_sim3$x)
+df <- data.frame(residuals_sq = residuals(fit3)^2, predictor = df_sim3$x)
 df %>%
-  ggplot(aes(x=predictor, y = residuals)) + geom_point() +geom_smooth(method="lm", se=F) + geom_smooth(se=F) 
+  ggplot(aes(x=predictor, y = residuals_sq)) + geom_point() +geom_smooth(method="lm", se=F) + geom_smooth(se=F) 
 ```
 
 ## Squared Residuals vs. Predictor (correction3) {.smaller}
 ```{r sq-residuals-predictor-correction3, echo=TRUE, message=FALSE, out.height = "80%"}
 fit_correct3 <-lm(y ~ log_x, df_sim3)
-df <- data.frame(residuals = residuals(fit_correct3)^2, predictor = df_sim3$x)
+df <- data.frame(residuals_sq = residuals(fit_correct3)^2, predictor = df_sim3$x)
 df %>%
-  ggplot(aes(x=predictor, y = residuals)) + geom_point() +   geom_smooth(method="lm", se=F) + geom_smooth(se=F) 
+  ggplot(aes(x=predictor, y = residuals_sq)) + geom_point() +   geom_smooth(method="lm", se=F) + geom_smooth(se=F) 
 ```
 
 
@@ -307,9 +304,9 @@ summary(fit4)
 
 ## Squared Residuals vs. Predictor (check4) {.smaller}
 ```{r sq-residuals-predictor-check4, echo=TRUE, message=FALSE, out.height = "50%"}
-df <- data.frame(residuals = residuals(fit4)^2, predictor = df_sim4$x)
+df <- data.frame(residuals_sq = residuals(fit4)^2, predictor = df_sim4$x)
 df %>%
-  ggplot(aes(x=predictor, y = residuals)) + geom_point() +geom_smooth(method="lm", se=F) + geom_smooth(se=F) 
+  ggplot(aes(x=predictor, y = residuals_sq)) + geom_point() +geom_smooth(method="lm", se=F) + geom_smooth(se=F) 
 ```
 
 ## Squared Residuals vs. Predictor (correction4) {.smaller}
