@@ -2,8 +2,16 @@
 title: "Linear Regression - MLE and Inference"
 author: "Manoel Galdino"
 date: "2024-01-26"
-output: ioslides_presentation
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    seal: false
+    nature:
+      highlightStyle: github
+      slideNumber: true
+      ratio: "16:9"
 ---
+
 ## Agenda for today's lecture
 
 - **Objective of the Lecture:** 
@@ -14,6 +22,10 @@ output: ioslides_presentation
 
 -- Learn how to make inference using the $t$ distribution
 
+-- Learn what is the implication of the Normal errors assumption
+
+---
+
 ## Maximum Likelihood
 
 - We've discussed several important aspects of OLS, including the unbiasedness and variance of $\hat{\beta}$.
@@ -21,6 +33,7 @@ output: ioslides_presentation
 - As a result, we cannot make inferences such as hypothesis testing or constructing confidence intervals.
 - Therefore, we will introduce the method of maximum likelihood for simple linear regression.
 
+---
 
 ## Maximum Likelihood - assumptions
 
@@ -29,12 +42,16 @@ output: ioslides_presentation
 - We will assume that the error term $e$ is normally distributed as $N(0, \sigma^2)$ and is independent of $X$.
 - Error terms are independent across observations.
 
+---
+
 ## Maximum Likelihood vs OLS - assumptions
 
 - What has changed?
 - The first two assumptions remain the same.
 - The third assumption is new. Previously, we only required the errors to have a zero mean (and, for the variance derivation, a constant variance). Now, we are assuming a specific distribution for the errors (Gaussian).
 - We have moved from assuming uncorrelatedness to independence, which is a stronger condition.
+
+---
 
 ## Maximum Likelihood - what do we get?
 
@@ -43,6 +60,8 @@ output: ioslides_presentation
 - $y_i = \alpha + \beta x_i + e_i$, where $e_i \sim N(0, \sigma^2)$.
 - Alternative parametrization: $y_i \sim N(\mu, \sigma^2)$. Here, $\mu = \alpha + \beta x_i$.
 - The pdf of $Y$ given $X=x$ is $p(y|X=x; \alpha, \beta, \sigma^2)$. This notation highlights the distinction between observables and parameters.
+
+---
 
 ## Maximum Likelihood - what do we get?
 
@@ -61,31 +80,41 @@ $$
 \prod_{i=1}^n \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left(-\frac{(y_i - (\alpha + \beta x_i))^2}{2\sigma^2}\right)
 \end{align*}
 $$
-- After collecting the data, with some estimated parameters, the equation becomes:
 <div>
 
+---
+
+- After collecting the data, with some estimated parameters, the equation becomes:
+
 $$
-\prod_{i=1}^n \frac{1}{\sqrt{2\pi S^2}}\exp\left(-\frac{(\hat{\alpha} + \hat{\beta} x_i)^2}{2S^2}\right)
+\prod_{i=1}^n \frac{1}{\sqrt{2\pi S^2}}\exp\left(-\frac{(y_i - \hat{\alpha} - \hat{\beta} x_i)^2}{2S^2}\right)
 $$
 - This expression represents the likelihood, a function of the estimated parameters.
+
+---
 
 ## Maximum Likelihood Estimation
 
 - Our goal is to select parameter values that maximize the probability of observing the data.
 - Utilizing calculus and working with the log-likelihood (applying the logarithm to the function alters the function but not the location of its maximum), we can easily derive the formulas for $\hat{\alpha}$ and $\hat{\beta}$ that maximize the likelihood.
-- $\hat{\alpha} = \mathbb{E}[Y] - \hat{\beta} \mathbb{E}[X]$
+- $\hat{\alpha} = \bar{y} - \hat{\beta} \bar{x}$
 - $\hat{\beta} = \frac{\text{Cov}(X,Y)}{S^2_x}$
-- $\hat{\sigma^2} = \mathbb{E}[(y_i - \hat{\alpha} - \hat{\beta}x_i)^2]$
+- $\hat{\sigma}^2 = \mathbb{E}[(y_i - \hat{\alpha} - \hat{\beta}x_i)^2]$
 - We obtain the same estimators as before, plus an estimator for $\sigma^2$
+
+---
 
 ## MLE - Sampling Distributions
 
-- Recall from the last class: $\hat{\beta} = \beta + \frac{\sum_{i=1}^n (x_i - \bar{x})e_i}{nS^2_x}$
-- With errors being independent Gaussians, $\hat{\beta}$ is also Gaussian.
+- Recall from previous classes: $\hat{\beta} = \beta + \frac{\sum_{i=1}^n (x_i - \bar{x})e_i}{nS^2_x}$
+- We know that if $X \sim N(\mu_x, \sigma^2_x)$ and $Y \sim N(\mu_y, \sigma^2_y)$ are independent, then for $Z = X + Y$, we have $Z \sim N(\mu_x + \mu_y, \sigma^2_x + \sigma^2_y)$.
+- Using the fact that error term is distributed as $e_i \sim N(0, \sigma^2)$.
+- And with errors being independent Gaussians, $\hat{\beta}$ is also Gaussian, we can get the sampling distribution of $\hat{\beta}$.
 - Knowing its mean and variance, we can state:
 - $\hat{\beta} \sim N(\beta, \frac{\sigma^2}{nS^2_x})$
-- Also, it's straightforward to derive the mean using the fact that if $X \sim N(\mu_x, \sigma^2_x)$ and $Y \sim N(\mu_y, \sigma^2_y)$ are independent, then for $Z = X + Y$, we have $Z \sim N(\mu_x + \mu_y, \sigma^2_x + \sigma^2_y)$.
-- Using the fact that error term is distributed as $e_i \sim N(0, \sigma^2)$, we get the mean very easily.
+
+
+---
 
 ## Properties and limitations of MLE
 
@@ -94,80 +123,21 @@ $$
 - However, if the error is not Gaussian distributed, then the sampling distribution calculations we just did are incorrect. Consequently, our hypothesis tests, confidence intervals, etc., will also be incorrect.
 - How incorrect?
 
+---
+
 ## Simulation of a wrong assumption
 
-Let's run four simulations where: 1. errors are normal; 2. errors are t-distributed; 3. errors are Beta distributed; 4. errors are a mixture of Normals.
-In every case, there is a fixed part of the DGP: $\mu = \alpha + \beta x_i$, with $\alpha = 5$ and $\beta = 1$, $x \sim N(2, 4)$. And the part that we change from each simulation is the distribution of the error term.
+- If you want to understand some idea, it's alwyas useful to run a simulation
 
-## Simulation of a wrong assumption - Normal errors
+- Let's explore this approach in the case of normal errors
 
-```{r Normal errors, echo=FALSE}
-# number of observations in the simulation
-set.seed(1234)
-n <- 100
-x <- rnorm(n, 2, sqrt(4))
-e <- rnorm(n, 0, 4) # Adjusted to reflect typical error distribution
-alpha <- 5
-beta <- 1
-y <- alpha + beta * x + e
-fit1 <- lm(y ~ x)
-summary(fit1)
-```
+- What if my true error distribution is not normal?
 
+- Let's run four simulations where: 1. errors are normal; 2. errors are t-distributed; 3. errors are Beta distributed; 4. errors are a mixture of Normals.
 
-## Simulation of a wrong assumption - t errors
+- In every case, there is a fixed part of the DGP: $\mu = \alpha + \beta x_i$, with $\alpha = 5$ and $\beta = 1$, $x \sim N(2, 4)$. And the part that we change from each simulation is the distribution of the error term.
 
-```{r t errors, echo=FALSE}
-# number of observations in the simulation
-
-set.seed(1234)
-n <- 100 
-x <- rnorm(n, 2, 4)
-e <- rt(n, df=4)*3
-alpha <- 5
-beta <- 1
-y <- alpha + beta*x + e
-fit2 <- lm(y ~x)
-summary(fit2)
-```
-
-## Simulation of a wrong assumption - Beta errors
-
-```{r Beta errors, echo=FALSE}
-# number of observations in the simulation
-set.seed(1234)
-n <- 100 
-x <- rnorm(n, 2, sqrt(4))
-e <- rbeta(n, .7, .7)*12.3
-e <- e - mean(e)
-alpha <- 5
-beta <- 1
-y <- alpha + beta*x + e
-fit3 <- lm(y ~x)
-summary(fit3)
-```
-
-## Simulation of a wrong assumption - Mixture of Normal errors
-
-```{r Mixture of Normal, echo=FALSE}
-# number of observations in the simulation
-set.seed(1234)
-n <- 100
-x <- rnorm(n, 2, sqrt(4))
-e1 <- rnorm(n/2, 2, 4)
-e2 <- rnorm(n/2, -2, 4)
-e <- c(e1, e2)
-alpha <- 5
-beta <- 1
-y <- alpha + beta*x + e
-fit3 <- lm(y ~x)
-summary(fit3)
-```
-## Exercise
-
-1. Compute an "empirical" estimate of the true standard errors in each case by simulating many estimations of $\hat{\beta}$, recording each value, and computing the variance and the square root of the variance (also known as standard error) of the estimates for each simulation. Verify that the average is close to the true value of $\beta$.
-
-2. Investigate what happens when the sample size $n$ increases (from 100 to 500 to 1000).
+---
 
 # Inference
 
@@ -181,7 +151,9 @@ summary(fit3)
 
 - We still have one unknown in the probability distribution. As a result, we need to estimate $\sigma^2$.
 
-## Sampling Distribution of $\hat{\sigma^2}$
+---
+
+## Sampling Distribution of the estimator of $\sigmaˆ2$.
 
 - The estimator of the variance can be defined as the sum of the squared residuals (since the mean of the residuals is zero) divided by $n$.
 
@@ -195,6 +167,8 @@ $$
 \frac{n\hat{\sigma}^2}{\sigma^2} \sim \chi^2_{n-2}.
 $$
 
+---
+
 ## Standard Error of $\hat{\beta}$
 
 - We know that $se(\hat{\beta}) = \frac{\sigma}{S_x\sqrt{n}}$.
@@ -203,19 +177,24 @@ $$
 
 $$
 \hat{se}(\hat{\beta}) = \frac{\hat{\sigma}}{S_x\sqrt{n-2}}
-$$.
+$$
+
+---
 
 ## Sampling Distribution of the New Standard Error
 
-- Now we need to determine the sampling distribution of the new $\hat{\beta}$.
+Now we need to determine the sampling distribution of the new $\hat{\beta}$.
 
 Using our old standard error, it's easy to show that:
 $$
 \frac{\hat{\beta} - \beta}{se(\hat{\beta})} \sim N(0,1)
 $$
-If we knew the true value of the variance $\sigma^2$, we could show:
+
+---
 
 ## Sampling Distribution of $\hat{se}(\hat{\beta})$
+
+If we knew the true value of the variance $\sigma^2$, we could show:
 
 $$
 \begin{align}
@@ -228,6 +207,8 @@ $$
 
 - Without divine intervention, we need to use $\hat{se}(\hat{\beta})$ instead.
 
+---
+
 ## Sampling Distribution of $\hat{se}(\hat{\beta})$ (cont.)
 
 We'll use a fact (which I won't prove) now.
@@ -237,9 +218,10 @@ $$
 \frac{Z}{\sqrt{S^2/d}} \sim t_d
 $$
 
-Applying this fact, we have:
+---
 
 ## Sampling Dist. of $\hat{se}(\hat{\beta})$ (cont.2)
+Applying this fact, we have:
 <style>
 .small-font {
     font-size: 80%;
@@ -255,8 +237,11 @@ $$
 = \frac{\sqrt{n} \times N(0,1/n)}{\frac{\sqrt{n} \times \hat{\sigma}}{\sigma \sqrt{n-2}}} = \frac{N(0,1)}{\frac{\sqrt{n\hat{\sigma}^2}}{\sqrt{\sigma^2 \times (n-2)}}} \\
 = \frac{N(0,1)}{\sqrt{\frac{n\hat{\sigma}^2}{\sigma^2 \times (n-2)}}} = \frac{N(0,1)}{\sqrt{\chi^2_{n-2}/(n-2)}} \sim t_d
 \end{align}
-$$.
+$$
 <div>
+
+---
+
 ## Hypothesis Testing
 
 This detailed derivation illustrates why we use the $t_d$ distribution with $d$ degrees of freedom instead of the Normal distribution for hypothesis testing.
@@ -270,6 +255,8 @@ This approach is also applicable to computing confidence intervals.
 We can further explore what happens to the $t_d$ distribution as $n$ increases.
 
 Exercise: Run a simulation to demonstrate that it converges to a Normal distribution.
+
+---
 
 ## Hypothesis Testing and Confidence Intervals
 
